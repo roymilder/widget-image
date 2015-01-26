@@ -7876,8 +7876,6 @@ angular.module("risevision.widget.image.settings")
             $scope.settingsForm.$setValidity("urlField", false);
           }
           else if (newUrl !== "") {
-            imageUrl = newUrl;
-
             // Destroy the watcher.
             urlWatcher();
           }
@@ -7894,7 +7892,6 @@ angular.module("risevision.widget.image.settings")
           }
           else {
             $scope.isValidUrl = false;
-            $scope.isValidFileType = true;
             $scope.settingsForm.$setValidity("urlField", $scope.isValidUrl);
           }
         }

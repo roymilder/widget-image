@@ -18,14 +18,15 @@
   ],
   "devDependencies": {
     "angular-mocks": "1.2.18",
-    "q": "1.0.1",
-    "sinon": "~1.10.2"
+    "q": "1.0.1"
   },
   "dependencies": {
     "angular": "1.2.18",
     "angular-route": "1.2.18",
+    "rise-storage": "https://github.com/Rise-Vision/web-component-rise-storage.git#~0.1.2",
     "widget-settings-ui-components": "https://github.com/Rise-Vision/widget-settings-ui-components.git#0.1.1",
-    "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git"
+    "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git",
+    "webcomponentsjs": "~0.5.4"
   },
   "resolutions": {
     "angular-translate": "~2.4.2",

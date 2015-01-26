@@ -6,21 +6,21 @@ angular.module("risevision.widget.image.settings")
       $scope.isValidUrl = false;
       $scope.isValidFileType = true;
 
-      $scope.$on("urlFieldBlur", function() {
+      $scope.validateImage = function() {
         if ($scope.settingsForm.urlField.$valid && imageUrl !== "") {
           imageValidator.isImage(imageUrl).then(function(result) {
             $scope.isValidFileType = result;
-            $scope.settingsForm.$setValidity("validFileType", result);
 
             if (result) {
               $scope.settings.additionalParams.storage = commonSettings.getStorageUrlData(imageUrl);
+              $scope.$parent.saveSettings();
             }
             else {
               $scope.settings.additionalParams.storage = {};
             }
           });
         }
-      });
+      };
 
       var urlWatcher = $scope.$watch("settings.additionalParams.url", function (newUrl, oldUrl) {
         if (typeof newUrl !== "undefined") {
@@ -49,7 +49,6 @@ angular.module("risevision.widget.image.settings")
             $scope.isValidUrl = false;
             $scope.isValidFileType = true;
             $scope.settingsForm.$setValidity("urlField", $scope.isValidUrl);
-            $scope.settingsForm.$setValidity("validFileType", $scope.isValidFileType);
           }
         }
       });

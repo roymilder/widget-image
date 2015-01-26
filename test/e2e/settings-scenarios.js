@@ -66,25 +66,16 @@
       expect(element(by.id("required-error")).isDisplayed()).to.eventually.be.false;
     });
 
-    it("Invalid image error should be shown when a valid non-image URL is entered", function () {
+    it("Save button should be enabled when a valid non-image URL is entered", function () {
       element(by.model("url")).sendKeys(validUrl);
-      // Take the focus off of the URL to force the validation to occur.
-      element(by.css("background-setting")).click();
-      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.true;
+      element(by.id("save")).click();
+      expect(element(by.css("#save[disabled=disabled]")).isPresent()).to.eventually.be.false;
     });
 
-    it("Save button should be disabled when a valid non-image URL is entered", function () {
+    it("ng-valid should be true when a valid non-image URL is entered", function () {
       element(by.model("url")).sendKeys(validUrl);
-      // Take the focus off of the URL to force the validation to occur.
-      element(by.css("background-setting")).click();
-      expect(element(by.css("#save[disabled=disabled]")).isPresent()).to.eventually.be.true;
-    });
-
-    it("ng-valid should be false when a valid non-image URL is entered", function () {
-      element(by.model("url")).sendKeys(validUrl);
-      // Take the focus off of the URL to force the validation to occur.
-      element(by.css("background-setting")).click();
-      expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.false;
+      element(by.id("save")).click();
+      expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.true;
     });
 
     it("URL required error should be hidden when a valid image URL is entered", function () {
@@ -92,25 +83,28 @@
       expect(element(by.id("required-error")).isDisplayed()).to.eventually.be.false;
     });
 
-    it("Invalid image error should be hidden when a valid image URL is entered", function () {
-      element(by.model("url")).sendKeys(validImageUrl);
-      // Take the focus off of the URL to force the validation to occur.
-      element(by.css("background-setting")).click();
-      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.false;
-    });
-
     it("Save button should be enabled when a valid image URL is entered", function () {
       element(by.model("url")).sendKeys(validImageUrl);
-      // Take the focus off of the URL to force the validation to occur.
-      element(by.css("background-setting")).click();
+      element(by.id("save")).click();
       expect(element(by.css("#save[disabled=disabled]")).isPresent()).to.eventually.be.false;
     });
 
     it("ng-valid should be true when a valid image URL is entered", function () {
       element(by.model("url")).sendKeys(validImageUrl);
-      // Take the focus off of the URL to force the validation to occur.
-      element(by.css("background-setting")).click();
+      element(by.id("save")).click();
       expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.true;
+    });
+
+    it("Invalid image error should be shown when saving a valid non-image URL", function () {
+      element(by.model("url")).sendKeys(validUrl);
+      element(by.id("save")).click();
+      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.true;
+    });
+
+    it("Invalid image error should be hidden when saving a valid image URL", function () {
+      element(by.model("url")).sendKeys(validImageUrl);
+      element(by.id("save")).click();
+      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.false;
     });
 
     // Saving

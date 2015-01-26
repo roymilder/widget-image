@@ -7885,14 +7885,15 @@ angular.module("risevision.widget.image.settings")
       $scope.$watch("settings.additionalParams.url", function (url) {
         if (url !== undefined && url !== "") {
           imageUrl = url;
+          $scope.isValidUrl = $scope.settingsForm.urlField.$valid;
 
+          // URL is valid.
           if ($scope.settingsForm.urlField.$valid) {
-            $scope.isValidUrl = true;
-            $scope.settingsForm.$setValidity("urlField", $scope.isValidUrl);
+            $scope.isValidFileType = imageValidator.hasValidExtension(url);
+            $scope.settingsForm.$setValidity("urlField", $scope.isValidFileType);
           }
           else {
-            $scope.isValidUrl = false;
-            $scope.settingsForm.$setValidity("urlField", $scope.isValidUrl);
+            $scope.isValidFileType = true;
           }
         }
       });
@@ -8034,6 +8035,17 @@ angular.module("risevision.widget.common")
 angular.module("risevision.widget.common")
   .factory("imageValidator", ["$q", function ($q) {
     var factory = {
+      hasValidExtension: function(url) {
+        var extensions = [".jpg", ".jpeg", ".png", ".bmp", ".svg", ".gif"];
+
+        for (var i = 0, len = extensions.length; i < len; i++) {
+          if (url.indexOf(extensions[i]) !== -1) {
+            return true;
+          }
+        }
+
+        return false;
+      },
       // Verify that URL is a valid image file.
       isImage: function(src) {
         var deferred = $q.defer(),

@@ -11,7 +11,8 @@
 
   describe("Image Settings - e2e Testing", function() {
     var validUrl = "http://s3.amazonaws.com/",
-      validImageUrl = "http://s3.amazonaws.com/rise-common/images/logo-small.png";
+      validImageUrl = "http://s3.amazonaws.com/rise-common/images/logo-small.png",
+      invalidImageUrl = "http://s3.amazonaws.com/rise-common/images/small.png";
 
     beforeEach(function () {
       browser.get("/src/settings-e2e.html");
@@ -66,21 +67,29 @@
       expect(element(by.id("required-error")).isDisplayed()).to.eventually.be.false;
     });
 
-    it("Save button should be enabled when a valid non-image URL is entered", function () {
+    it("Invalid image error should be shown when a valid non-image URL is entered", function () {
       element(by.model("url")).sendKeys(validUrl);
-      element(by.id("save")).click();
-      expect(element(by.css("#save[disabled=disabled]")).isPresent()).to.eventually.be.false;
+      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.true;
     });
 
-    it("ng-valid should be true when a valid non-image URL is entered", function () {
+    it("Save button should be disabled when a valid non-image URL is entered", function () {
       element(by.model("url")).sendKeys(validUrl);
-      element(by.id("save")).click();
-      expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.true;
+      expect(element(by.css("#save[disabled=disabled]")).isPresent()).to.eventually.be.true;
+    });
+
+    it("ng-valid should be false when a valid non-image URL is entered", function () {
+      element(by.model("url")).sendKeys(validUrl);
+      expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.false;
     });
 
     it("URL required error should be hidden when a valid image URL is entered", function () {
       element(by.model("url")).sendKeys(validImageUrl);
       expect(element(by.id("required-error")).isDisplayed()).to.eventually.be.false;
+    });
+
+    it("Invalid image error should be hidden when a valid image URL is entered", function () {
+      element(by.model("url")).sendKeys(validImageUrl);
+      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.false;
     });
 
     it("Save button should be enabled when a valid image URL is entered", function () {
@@ -95,8 +104,8 @@
       expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.true;
     });
 
-    it("Invalid image error should be shown when saving a valid non-image URL", function () {
-      element(by.model("url")).sendKeys(validUrl);
+    it("Invalid image error should be shown when saving an image that does not exist", function () {
+      element(by.model("url")).sendKeys(invalidImageUrl);
       element(by.id("save")).click();
       expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.true;
     });

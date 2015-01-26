@@ -38,14 +38,15 @@ angular.module("risevision.widget.image.settings")
       $scope.$watch("settings.additionalParams.url", function (url) {
         if (url !== undefined && url !== "") {
           imageUrl = url;
+          $scope.isValidUrl = $scope.settingsForm.urlField.$valid;
 
+          // URL is valid.
           if ($scope.settingsForm.urlField.$valid) {
-            $scope.isValidUrl = true;
-            $scope.settingsForm.$setValidity("urlField", $scope.isValidUrl);
+            $scope.isValidFileType = imageValidator.hasValidExtension(url);
+            $scope.settingsForm.$setValidity("urlField", $scope.isValidFileType);
           }
           else {
-            $scope.isValidUrl = false;
-            $scope.settingsForm.$setValidity("urlField", $scope.isValidUrl);
+            $scope.isValidFileType = true;
           }
         }
       });

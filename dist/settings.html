@@ -46,14 +46,14 @@
             <p id="invalid-image-error" class="text-danger text-validation" ng-show="!isValidFileType">
               {{"image.errors.file-type" | translate}}
             </p>
-            <div class="form-group" ng-show="isValidUrl">
+            <div class="form-group" ng-show="isValidUrl && isValidFileType">
               <div class="checkbox">
                 <label for="scale-to-fit">
                   <input id="scale-to-fit" type="checkbox" ng-model="settings.additionalParams.scaleToFit">{{"widgets.scale-to-fit" | translate}}
                 </label>
               </div>
             </div>
-            <div class="form-group" ng-show="isValidUrl">
+            <div class="form-group" ng-show="isValidUrl && isValidFileType">
               <position-setting position="settings.additionalParams.position"></position-setting>
             </div>
             <background-setting background="settings.additionalParams.background"></background-setting>

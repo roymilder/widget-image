@@ -74,6 +74,11 @@
       }))
   });
 
+  gulp.task("fonts", function() {
+    return gulp.src("src/components/common-style/dist/fonts/**/*")
+      .pipe(gulp.dest("dist/fonts"));
+  });
+
   gulp.task("i18n", function(cb) {
     return gulp.src(["src/components/rv-common-i18n/dist/locales/**/*"])
       .pipe(gulp.dest("dist/locales"));
@@ -109,7 +114,7 @@
   });
 
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["source", "i18n"], ["unminify"], cb);
+    runSequence(["clean", "config"], ["source", "fonts", "i18n"], ["unminify"], cb);
   });
 
   gulp.task("default", function(cb) {

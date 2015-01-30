@@ -23,7 +23,8 @@
       "!./src/components/**/*"
     ],
     htmlFiles = [
-      "./src/settings.html"
+      "./src/settings.html",
+      "./src/widget.html"
     ];
 
   gulp.task("clean", function () {
@@ -84,6 +85,17 @@
       .pipe(gulp.dest("dist/locales"));
   });
 
+  gulp.task("rise-storage", function() {
+    return gulp.src([
+      "src/components/webcomponentsjs/webcomponents.js",
+      "src/components/rise-storage/rise-storage.html",
+      "src/components/polymer/**/*.*{html,js}",
+      "src/components/core-ajax/core-ajax.html",
+      "src/components/core-ajax/core-xhr.html"
+    ], {base: "./src/"})
+      .pipe(gulp.dest("dist/"));
+  });
+
   gulp.task("watch",function(){
     gulp.watch("./src/**/*", ["build"]);
   });
@@ -91,22 +103,27 @@
   gulp.task("webdriver_update", factory.webdriveUpdate());
 
   // e2e testing
-  // Settings
   gulp.task("html:e2e", factory.htmlE2E({
-    files: htmlFiles,
-    e2eMockData: "../test/data/mock-data.js"
+    files: ["./src/settings.html", "./src/widget.html", "./test/html/widget-storage-test.html"],
+    e2eUrl: "../test/data/url.js",
+    e2eStorage: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js",
+      "../test/data/storage.js"]
   }));
 
   gulp.task("e2e:server", ["config", "html:e2e"], factory.testServer());
 
   gulp.task("test:e2e:settings", ["webdriver_update"], factory.testE2EAngular({
-    testFiles: "test/e2e/settings-scenarios.js"
-  }));
+      testFiles: "test/e2e/settings.js"}
+  ));
+
+  gulp.task("test:e2e:widget", factory.testE2E({
+      testFiles: "test/e2e/widget-*.js"}
+  ));
 
   gulp.task("e2e:server-close", factory.testServerClose());
 
   gulp.task("test:e2e", function(cb) {
-    runSequence(["html:e2e", "e2e:server"], "test:e2e:settings", "e2e:server-close", cb);
+    runSequence(["html:e2e", "e2e:server"], "test:e2e:settings", "test:e2e:widget", "e2e:server-close", cb);
   });
 
   gulp.task("test", function(cb) {
@@ -114,7 +131,7 @@
   });
 
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["source", "fonts", "i18n"], ["unminify"], cb);
+    runSequence(["clean", "config"], ["source", "fonts", "i18n", "rise-storage"], ["unminify"], cb);
   });
 
   gulp.task("default", function(cb) {

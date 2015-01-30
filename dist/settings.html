@@ -39,21 +39,18 @@
           </div>
           <form role="form" name="settingsForm">
             <url-field id="urlField" name="urlField" url="settings.additionalParams.url" company-id="{{settings.params.companyId}}"
-              ng-model="urlField" valid></url-field>
-            <p id="required-error" class="text-danger text-validation" ng-show="!isValidUrl">
-              {{"widgets.errors.required" | translate}}
+              ng-model="urlField" file-type="image" valid></url-field>
+            <p id="invalid-image-error" class="text-danger text-validation" ng-show="!isValidImage">
+              {{ "url.errors.image" | translate }}
             </p>
-            <p id="invalid-image-error" class="text-danger text-validation" ng-show="!isValidFileType">
-              {{"image.errors.file-type" | translate}}
-            </p>
-            <div class="form-group" ng-show="isValidUrl && isValidFileType">
+            <div class="form-group" ng-show="settingsForm.urlField.$valid">
               <div class="checkbox">
                 <label for="scale-to-fit">
                   <input id="scale-to-fit" type="checkbox" ng-model="settings.additionalParams.scaleToFit">{{"widgets.scale-to-fit" | translate}}
                 </label>
               </div>
             </div>
-            <div class="form-group" ng-show="isValidUrl && isValidFileType">
+            <div class="form-group" ng-show="settingsForm.urlField.$valid">
               <position-setting position="settings.additionalParams.position"></position-setting>
             </div>
             <background-setting background="settings.additionalParams.background"></background-setting>

@@ -41,10 +41,6 @@
     });
 
     // Visibility
-    it("URL required error should be shown", function () {
-      expect(element(by.id("required-error")).isDisplayed()).to.eventually.be.true;
-    });
-
     it("Invalid image error should be hidden", function () {
       expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.false;
     });
@@ -60,36 +56,6 @@
 
     it("Save button should be disabled", function () {
       expect(element(by.css("#save[disabled=disabled")).isPresent()).to.eventually.be.true;
-    });
-
-    it("URL required error should be hidden when a valid non-image URL is entered", function () {
-      element(by.model("url")).sendKeys(validUrl);
-      expect(element(by.id("required-error")).isDisplayed()).to.eventually.be.false;
-    });
-
-    it("Invalid image error should be shown when a valid non-image URL is entered", function () {
-      element(by.model("url")).sendKeys(validUrl);
-      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.true;
-    });
-
-    it("Save button should be disabled when a valid non-image URL is entered", function () {
-      element(by.model("url")).sendKeys(validUrl);
-      expect(element(by.css("#save[disabled=disabled]")).isPresent()).to.eventually.be.true;
-    });
-
-    it("ng-valid should be false when a valid non-image URL is entered", function () {
-      element(by.model("url")).sendKeys(validUrl);
-      expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.false;
-    });
-
-    it("URL required error should be hidden when a valid image URL is entered", function () {
-      element(by.model("url")).sendKeys(validImageUrl);
-      expect(element(by.id("required-error")).isDisplayed()).to.eventually.be.false;
-    });
-
-    it("Invalid image error should be hidden when a valid image URL is entered", function () {
-      element(by.model("url")).sendKeys(validImageUrl);
-      expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.false;
     });
 
     it("Save button should be enabled when a valid image URL is entered", function () {

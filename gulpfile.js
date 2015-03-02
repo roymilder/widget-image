@@ -105,7 +105,7 @@
   // e2e testing
   gulp.task("html:e2e", factory.htmlE2E({
     files: ["./src/settings.html", "./src/widget.html", "./test/html/widget-storage-test.html"],
-    e2eUrl: "../test/data/url.js",
+    e2eUrl: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js", "../test/data/url.js"],
     e2eStorage: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js",
       "../test/data/storage.js"]
   }));

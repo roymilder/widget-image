@@ -1,6 +1,6 @@
 {
   "name": "widget-image",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/Rise-Vision/widget-image",
   "description": "Rise Vision Image Widget",
   "main": "src/settings.html",
@@ -23,13 +23,12 @@
   "dependencies": {
     "angular": "1.2.18",
     "angular-route": "1.2.18",
-    "rise-storage": "https://github.com/Rise-Vision/web-component-rise-storage.git#~0.1.2",
-    "widget-settings-ui-components": "https://github.com/Rise-Vision/widget-settings-ui-components.git#0.1.4",
-    "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git",
+    "rise-storage": "https://github.com/Rise-Vision/web-component-rise-storage.git#0.1.7",
+    "widget-settings-ui-components": "https://github.com/Rise-Vision/widget-settings-ui-components.git#0.1.10",
+    "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git#0.1.11",
     "webcomponentsjs": "~0.5.4"
   },
   "resolutions": {
-    "angular-translate": "~2.4.2",
-    "angular-translate-loader-static-files": "~2.4.2"
+    "common-style": "master"
   }
 }

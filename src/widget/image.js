@@ -14,8 +14,7 @@ RiseVision.Image = (function (gadgets) {
    *  Private Methods
    */
   function init() {
-    var storage = null,
-      id = prefs.getString("id");
+    var storage = null;
 
     img.className = params.position;
     img.className = params.scaleToFit ? img.className + " scale-to-fit" : img.className;
@@ -28,9 +27,7 @@ RiseVision.Image = (function (gadgets) {
     // Rise Storage
     else {
       storage = new RiseVision.Image.Storage(params);
-
-      gadgets.rpc.register("rsparam_set_" + id, storage.getCompanyId);
-      gadgets.rpc.call("", "rsparam_get", null, id, "companyId");
+      storage.init();
     }
   }
 

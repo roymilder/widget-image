@@ -1,7 +1,9 @@
 <link rel="import" href="../../components/polymer/polymer.html">
 <link rel="import" href="../../components/core-ajax/core-ajax.html">
 
-<polymer-element name="rise-storage" attributes="companyId folder fileName folderRefresh">
+<script src="../../components/underscore/underscore.js"></script>
+
+<polymer-element name="rise-storage" attributes="companyId folder fileName fileType contentType refresh sort sortDirection">
   <template>
     <core-ajax id="storage"
       url="{{url}}"
@@ -18,7 +20,7 @@
   </template>
 
   <script>
-    /* global Polymer */
+    /* global Polymer, _ */
     /*jshint newcap: false */
     Polymer("rise-storage", {
       /**
@@ -38,7 +40,7 @@
        *
        * @attribute companyId
        * @type string
-       * @default ''
+       * @default ""
        */
       companyId: "",
 
@@ -47,7 +49,7 @@
        *
        * @attribute folder
        * @type string
-       * @default ''
+       * @default ""
        */
       folder: "",
 
@@ -56,30 +58,65 @@
        *
        * @attribute fileName
        * @type string
-       * @default ''
+       * @default ""
        */
       fileName: "",
 
       /**
-       * The number of seconds before the folder will be checked for changes.
-
+       * Only return files that are of a particular file type.
        *
-       * @attribute folderRefresh
+       * @attribute fileType
+       * @type string
+       * @default ""
+       */
+      fileType: "",
+
+      /**
+       * Only return files with a particular content type.
+       *
+       * @attribute contentType
+       * @type string
+       * @default ""
+       */
+      contentType: "",
+
+      /**
+       * The number of seconds before the folder will be checked for changes.
+       *
+       * @attribute refresh
        * @type number
        * @default 0 (no refresh)
        */
-      folderRefresh: 0,
+      refresh: 0,
+
+      /**
+       * The order in which files are sorted.
+       *
+       * @attribute sort
+       * @type string
+       * @default ""
+       */
+      sort: "",
+
+      /**
+       * The direction in which files are sorted.
+       *
+       * @attribute sortDirection
+       * @type string
+       * @default ""
+       */
+      sortDirection: "",
 
       /**
        * The URL target of the request.
        *
        * @property url
        * @type string
-       * @default ''
+       * @default ""
        */
       url: "",
 
-       /**
+      /**
        * Whether or not Rise Cache is running.
        *
        * @property isCacheRunning
@@ -88,20 +125,46 @@
        */
       isCacheRunning: false,
 
+      /**
+       * Whether or not a response has been received from the ping request.
+       *
+       * @property pingReceived
+       * @type boolean
+       * @default false
+       */
+      pingReceived: false,
+
+      /**
+       * Polymer has finished its initialization. This is the entry point.
+       */
       ready: function() {
-        this.setUrl();
+        this.images = ["image/jpeg", "image/png", "image/bmp", "image/svg+xml", "image/gif"];
+        this.videos = ["video/mp4", "video/ogg", "video/webm"];
+        this.imagesLen = this.images.length;
+        this.videosLen = this.videos.length;
+        this.contentTypes = this.contentType.split(" ");
+        this.contentTypesLen = this.contentTypes.length;
+
         this.$.ping.go();
       },
 
+      /**
+       * Set the URL that is used for making requests to Storage.
+       */
       setUrl: function() {
         var baseUrl = "https://www.googleapis.com/storage/v1/b/risemedialibrary-" + encodeURIComponent(this.companyId) + "/o",
           delimiter = "?delimiter=" + encodeURIComponent("/"),
-          folder = "&prefix=" + encodeURIComponent(this.folder) + "/",
+          folder = "&prefix=" + encodeURIComponent(this.folder),
           fileName = encodeURIComponent(this.fileName),
           url = baseUrl;
 
         if (this.companyId) {
           if (this.folder) {
+            // Append a "/" at end of folder if necessary.
+            if (this.folder.slice(-1) !== "/") {
+              folder += "/";
+            }
+
             // Get a specific file in a specific folder.
             if (this.fileName) {
               url += delimiter + folder + fileName;
@@ -124,42 +187,150 @@
         }
       },
 
+      /**
+       * Handle a folder refresh.
+       */
       startTimer: function() {
         // Don't refresh individual files.
         if (!this.fileName) {
-          this.folderRefresh = parseInt(this.folderRefresh, 10);
+          this.refresh = parseInt(this.refresh, 10);
 
-          if (!isNaN(this.folderRefresh) && this.folderRefresh !== 0) {
-            this.folderRefresh = (this.folderRefresh < 15) ? 15 : this.folderRefresh;
+          if (!isNaN(this.refresh) && this.refresh !== 0) {
+            this.refresh = (this.refresh < 15) ? 15 : this.refresh;
 
             this.job("refresh", function() {
+              this.pingReceived = false;
               this.$.ping.go();
               this.startTimer();
-            }, this.folderRefresh * 60000);
+            }, this.refresh * 60000);
           }
         }
       },
 
+      /**
+       * Filter an item by file type.
+       */
+      filterByFileType: function(contentType) {
+        var i;
+
+        if (this.fileType === "image") {
+          for (i = 0; i < this.imagesLen; i++) {
+            if (contentType === this.images[i]) {
+              return true;
+            }
+          }
+        }
+        else if (this.fileType === "video") {
+          for (i = 0; i < this.videosLen; i++) {
+            if (contentType === this.videos[i]) {
+              return true;
+            }
+          }
+        }
+
+        return false;
+      },
+
+      /**
+       * Filter an item by content type.
+       */
+      filterByContentType: function(contentType) {
+        for (var i = 0; i < this.contentTypesLen; i++) {
+          if (contentType === this.contentTypes[i]) {
+            return true;
+          }
+        }
+
+        return false;
+      },
+
+      /**
+       * Sort files.
+       */
+      sortFiles: function(files) {
+        if (this.sort === "name" || this.sort === "date") {
+          files = _.sortBy(files, function(file) {
+            return file.sortBy;
+          });
+        }
+        else if (this.sort === "random") {
+          return _.shuffle(files);
+        }
+
+        // Direction
+        if (this.sortDirection) {
+          if (this.sortDirection === "asc") {
+            return files;
+          }
+          else if (this.sortDirection === "desc") {
+            return files.reverse();
+          }
+        }
+        else {
+          return files;
+        }
+      },
+
+      /**
+       * Fired when a response is received from Storage.
+       */
       handleStorageResponse: function(e, resp) {
         var self = this,
-          urls = [];
+          file = null,
+          files = [],
+          urls =[];
 
-        // Send back array of URLs.
+        // Multiple files
         if (resp && resp.response && resp.response.items) {
           resp.response.items.forEach(function(elem) {
-            // Check that this is not the folder itself.
+            file = {};
+
+            // Check that this is not a folder.
             if (elem.name && (elem.name.slice(-1) !== "/")) {
               if (elem.mediaLink) {
+                // Perform any necessary filtering.
+                if (self.fileType) {
+                  if (!self.filterByFileType(elem.contentType)) {
+                    return;
+                  }
+                }
+                else if (self.contentType) {
+                  if (!self.filterByContentType(elem.contentType)) {
+                    return;
+                  }
+                }
+
+                // Sorting
+                if (self.sort) {
+                  if (self.sort === "name") {
+                    file.sortBy = elem.name;
+                  }
+                  else if (self.sort === "date") {
+                    file.sortBy = new Date(elem.updated).getTime();
+                  }
+                }
+
                 if (self.isCacheRunning) {
-                  urls.push("http://localhost:9494/?url=" + escape(elem.mediaLink));
+                  file.url = "http://localhost:9494/?url=" + escape(elem.mediaLink);
                 }
                 else {
-                  urls.push(elem.mediaLink);
+                  file.url = elem.mediaLink;
                 }
+
+                files.push(file);
               }
             }
           });
+
+          if (this.sort && files.length > 0) {
+            files = this.sortFiles(files);
+          }
+
+          files.forEach(function(file) {
+            urls.push(file.url);
+          });
         }
+        // Single file.
         else if (resp && resp.response && resp.response.mediaLink) {
           if (this.isCacheRunning) {
             urls.push("http://localhost:9494/?url=" + escape(resp.response.mediaLink));
@@ -173,12 +344,18 @@
         this.fire("rise-storage-response", urls);
       },
 
+      /**
+       * Fired when an error is received from Storage.
+       */
       handleStorageError: function(e, resp) {
         console.log("Storage Error: " + resp.xhr.status + " " + resp.xhr.statusText);
 
         this.fire("rise-storage-error", resp);
       },
 
+      /**
+       * Fired when a response is received from Rise Cache.
+       */
       handlePingResponse: function(e, resp) {
         if (resp.response === "") {
           this.isCacheRunning = false;
@@ -187,13 +364,18 @@
           this.isCacheRunning = true;
         }
 
+        this.pingReceived = true;
         this.go();
       },
 
+      /**
+       * Fired when an error is received from Rise Cache.
+       */
       handlePingError: function(e, resp) {
         console.log("Ping Error: " + resp.xhr.status + " " + resp.xhr.statusText);
 
         this.isCacheRunning = false;
+        this.pingReceived = true;
         this.go();
       },
 
@@ -203,8 +385,10 @@
        * @method go
        */
       go: function() {
-        this.setUrl();
-        this.$.storage.go();
+        if (this.pingReceived) {
+          this.setUrl();
+          this.$.storage.go();
+        }
       }
     });
   </script>

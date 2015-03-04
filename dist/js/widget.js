@@ -4,7 +4,7 @@ if (typeof angular !== "undefined") {
     .constant("LOCALES_SUFIX", ".json");
 
   angular.module("risevision.widget.common.storage-selector.config")
-    .value("STORAGE_MODAL", "http://storage.risevision.com/~rvi/storage-client-rva-test/storage-modal.html#/files/");
+    .value("STORAGE_MODAL", "https://storage-stage.risevision.com/rva-test/dist/storage-modal.html#/files/");
 }
 
 /* global gadgets */
@@ -23,8 +23,7 @@ RiseVision.Image = (function (gadgets) {
    *  Private Methods
    */
   function init() {
-    var storage = null,
-      id = prefs.getString("id");
+    var storage = null;
 
     img.className = params.position;
     img.className = params.scaleToFit ? img.className + " scale-to-fit" : img.className;
@@ -37,9 +36,7 @@ RiseVision.Image = (function (gadgets) {
     // Rise Storage
     else {
       storage = new RiseVision.Image.Storage(params);
-
-      gadgets.rpc.register("rsparam_set_" + id, storage.getCompanyId);
-      gadgets.rpc.call("", "rsparam_get", null, id, "companyId");
+      storage.init();
     }
   }
 
@@ -74,12 +71,10 @@ RiseVision.Image = RiseVision.Image || {};
 RiseVision.Image.Storage = function (params) {
   "use strict";
 
-  var companyId = "";
-
   /*
-   *  Private Methods
+   *  Public Methods
    */
-  function initStorage() {
+  function init() {
     var storage = document.querySelector("rise-storage"),
       img = document.getElementById("image");
 
@@ -90,22 +85,12 @@ RiseVision.Image.Storage = function (params) {
 
     storage.setAttribute("folder", params.storage.folder);
     storage.setAttribute("fileName", params.storage.fileName);
-    storage.setAttribute("companyId", companyId);
+    storage.setAttribute("companyId", params.storage.companyId);
     storage.go();
   }
 
-  /*
-   *  Public Methods
-   */
-  function getCompanyId(name, value) {
-    if (name === "companyId") {
-      companyId = value;
-      initStorage();
-    }
-  }
-
   return {
-    "getCompanyId": getCompanyId
+    "init": init
   };
 };
 

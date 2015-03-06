@@ -8,20 +8,33 @@ RiseVision.Image = (function (gadgets) {
 
   var params,
     prefs = new gadgets.Prefs(),
-    img = document.getElementById("image");
+    img = document.getElementById("image"),
+    separator = "",
+    refreshInterval = 900000;  // 15 minutes
 
   /*
    *  Private Methods
    */
   function init() {
-    var storage = null;
+    var storage = null,
+      str;
 
     img.className = params.position;
     img.className = params.scaleToFit ? img.className + " scale-to-fit" : img.className;
     document.body.style.background = params.background.color;
 
     if (Object.keys(params.storage).length === 0) {
+      str = params.url.split("?");
+
+      if (str.length === 1) {
+        separator = "?";
+      }
+      else {
+        separator = "&";
+      }
+
       img.style.backgroundImage = "url(" + params.url + ")";
+      startTimer();
       ready();
     }
     // Rise Storage
@@ -29,6 +42,13 @@ RiseVision.Image = (function (gadgets) {
       storage = new RiseVision.Image.Storage(params);
       storage.init();
     }
+  }
+
+  function startTimer() {
+    setTimeout(function() {
+      img.style.backgroundImage = "url(" + params.url + separator + "cb=" + new Date().getTime() + ")";
+      startTimer();
+    }, refreshInterval);
   }
 
   /*

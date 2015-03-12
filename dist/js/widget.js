@@ -1,10 +1,7 @@
 if (typeof angular !== "undefined") {
   angular.module("risevision.common.i18n.config", [])
-    .constant("LOCALES_PREFIX", "components/rv-common-i18n/dist/locales/translation_")
+    .constant("LOCALES_PREFIX", "locales/translation_")
     .constant("LOCALES_SUFIX", ".json");
-
-  angular.module("risevision.widget.common.storage-selector.config")
-    .value("STORAGE_MODAL", "https://storage-stage.risevision.com/rva-test/dist/storage-modal.html#/files/");
 }
 
 /* global gadgets */
@@ -91,6 +88,8 @@ RiseVision.Image = RiseVision.Image || {};
 RiseVision.Image.Storage = function (params) {
   "use strict";
 
+  var isLoading = true;
+
   /*
    *  Public Methods
    */
@@ -99,8 +98,14 @@ RiseVision.Image.Storage = function (params) {
       img = document.getElementById("image");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      img.style.backgroundImage = "url(" + e.detail[0] + ")";
-      RiseVision.Image.ready();
+      if (e.detail && e.detail.files && e.detail.files.length > 0) {
+        img.style.backgroundImage = "url(" + e.detail.files[0].url + ")";
+      }
+
+      if (isLoading) {
+        RiseVision.Image.ready();
+        isLoading = false;
+      }
     });
 
     storage.setAttribute("folder", params.storage.folder);
@@ -128,8 +133,10 @@ RiseVision.Image.Storage = function (params) {
     return false;
   };
 
-  gadgets.rpc.register("rsparam_set_" + id, RiseVision.Image.getAdditionalParams);
-  gadgets.rpc.call("", "rsparam_get", null, id, ["additionalParams"]);
+  window.addEventListener("polymer-ready", function() {
+    gadgets.rpc.register("rsparam_set_" + id, RiseVision.Image.getAdditionalParams);
+    gadgets.rpc.call("", "rsparam_get", null, id, ["additionalParams"]);
+  });
 })(window, document, gadgets);
 
 /* jshint ignore:start */

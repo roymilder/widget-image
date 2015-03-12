@@ -5,10 +5,10 @@
   window.gadget.settings = {
     "params": {},
     "additionalParams": {
-      "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Ignite_Me_Book_Cover.jpg",
+      "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fmoon.jpg",
       "storage": {
-        "folder": "",
-        "fileName": "Ignite_Me_Book_Cover.jpg"
+        "folder": "Widgets",
+        "fileName": "moon.jpg"
       },
       "scaleToFit": false,
       "position": "top-left",

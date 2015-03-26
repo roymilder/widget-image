@@ -15,8 +15,9 @@
   var runSequence = require("run-sequence");
   var path = require("path");
   var rename = require("gulp-rename");
-  var factory = require("widget-tester").gulpTaskFactory;
   var sourcemaps = require("gulp-sourcemaps");
+  var htmlreplace = require("gulp-html-replace");
+  var factory = require("widget-tester").gulpTaskFactory;
 
   var appJSFiles = [
       "src/**/*.js",
@@ -88,6 +89,8 @@
   gulp.task("rise-storage", function() {
     return gulp.src([
       "src/components/webcomponentsjs/webcomponents.js",
+      "src/components/webcomponentsjs/webcomponents.min.js",
+      "src/components/underscore/underscore*.*",
       "src/components/rise-storage/rise-storage.html",
       "src/components/polymer/**/*.*{html,js}",
       "src/components/core-ajax/core-ajax.html",
@@ -103,27 +106,67 @@
   gulp.task("webdriver_update", factory.webdriveUpdate());
 
   // e2e testing
-  gulp.task("html:e2e", factory.htmlE2E({
-    files: ["./src/settings.html", "./src/widget.html", "./test/html/widget-storage-test.html"],
-    e2eUrl: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js", "../test/data/url.js"],
-    e2eStorage: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js",
-      "../test/data/storage.js"]
+  // Settings
+  gulp.task("html:e2e:settings", factory.htmlE2E({
+    e2eMockData: "../test/data/url.js"
   }));
 
-  gulp.task("e2e:server", ["config", "html:e2e"], factory.testServer());
+  gulp.task("e2e:server:settings", ["config", "html:e2e:settings"], factory.testServer());
 
-  gulp.task("test:e2e:settings", ["webdriver_update"], factory.testE2EAngular({
-      testFiles: "test/e2e/settings.js"}
+  gulp.task("test:e2e:settings:run", ["webdriver_update"], factory.testE2EAngular({
+    testFiles: "test/e2e/settings.js"}
   ));
 
-  gulp.task("test:e2e:widget", factory.testE2E({
+  gulp.task("test:e2e:settings", function(cb) {
+    runSequence(["e2e:server:settings"], "test:e2e:settings:run", "e2e:server-close", cb);
+  });
+
+  // Widget
+  gulp.task("html:e2e:widget:url", function () {
+    return gulp.src("./src/widget.html")
+      .pipe(htmlreplace({
+        e2egadgets: "../node_modules/widget-tester/mocks/gadget-mocks.js",
+        e2eMockData: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js",
+          "../test/data/url.js"]
+      }))
+      .pipe(rename(function (path) {
+        path.basename += "-url-e2e";
+      }))
+      .pipe(gulp.dest("./src/"));
+  });
+
+  gulp.task("html:e2e:widget:storage", function () {
+    return gulp.src("./src/widget.html")
+      .pipe(htmlreplace({
+        e2egadgets: "../node_modules/widget-tester/mocks/gadget-mocks.js",
+        e2eMockData: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js",
+          "../test/data/storage.js"],
+        e2eStorageMock: "../node_modules/widget-tester/mocks/rise-storage-mock.js"
+      }))
+      .pipe(rename(function (path) {
+        path.basename += "-storage-e2e";
+      }))
+      .pipe(gulp.dest("./src/"));
+  });
+
+  gulp.task("html:e2e:widget", function (cb) {
+    runSequence("html:e2e:widget:url", "html:e2e:widget:storage", cb);
+  });
+
+  gulp.task("e2e:server:widget", ["config", "html:e2e:widget"], factory.testServer());
+
+  gulp.task("test:e2e:widget:run", factory.testE2E({
       testFiles: "test/e2e/widget-*.js"}
   ));
+
+  gulp.task("test:e2e:widget", function(cb) {
+    runSequence(["e2e:server:widget"], "test:e2e:widget:run", "e2e:server-close", cb);
+  });
 
   gulp.task("e2e:server-close", factory.testServerClose());
 
   gulp.task("test:e2e", function(cb) {
-    runSequence(["html:e2e", "e2e:server"], "test:e2e:settings", "test:e2e:widget", "e2e:server-close", cb);
+    runSequence("test:e2e:settings", "test:e2e:widget", cb);
   });
 
   gulp.task("test", function(cb) {

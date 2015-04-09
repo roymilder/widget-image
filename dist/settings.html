@@ -39,7 +39,7 @@
           </div>
           <form role="form" name="settingsForm">
             <url-field id="urlField" name="urlField" url="settings.additionalParams.url" company-id="{{settings.params.companyId}}"
-              ng-model="urlField" file-type="image" valid></url-field>
+              type="single-file" ng-model="urlField" file-type="image" valid></url-field>
             <p id="invalid-image-error" class="text-danger text-validation" ng-show="!isValidImage">
               {{ "url.errors.image" | translate }}
             </p>

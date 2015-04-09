@@ -29,6 +29,8 @@ casper.test.begin("Image Widget - Storage - e2e Testing", {
         });
       },
       function then() {
+        var imageStyle = "";
+
         test.assertDoesntExist(".scale-to-fit", "No scale to fit");
         test.assertExists(".top-left", "Alignment");
         test.assertEquals(this.getElementAttribute("body", "style"),
@@ -36,31 +38,26 @@ casper.test.begin("Image Widget - Storage - e2e Testing", {
           "background-clip: initial; background-color: transparent; " +
           "background-position: initial initial; background-repeat: initial initial; ",
           "Background color");
-        test.assertEquals(this.getElementAttribute("#image", "style"),
-          "background-image: url(https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fmoon.jpg); ", "Image");
+        test.assertEval(function() {
+          return document.getElementById("image").getAttribute("style") ===
+              "background-image: url(https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fmoon.jpg?alt=media); ";
+        }, "Image");
 
-        /* TODO: Test that image is refreshed. */
-        // casper.evaluate(function() {
-        //   window.clock = sinon.useFakeTimers();
-        // });
+        // Image Refresh
+        imageStyle = this.evaluate(function getImageStyle() {
+          window.imageStyle = document.getElementById("image").getAttribute("style");
 
-        // casper.waitFor(function waitForTimer() {
-        //   return this.evaluate(function expireTimer() {
-        //     window.clock.tick(900000);
+          return window.imageStyle;
+        });
 
-        //     return document.getElementById("image").getAttribute("style") !==
-        //       "background-image: url(https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fmoon.jpg); ";
-        //   });
-        // },
-        // function then() {
-        //   this.evaluate(function() {
-        //     window.clock.restore();
-        //   });
-
-        //   test.assertNotEquals(this.getElementAttribute("#image", "style"),
-        //     "background-image: url(https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fmoon.jpg); ",
-        //     "Image is refreshed");
-        //});
+        casper.waitFor(function refreshImage() {
+          return this.evaluate(function getNewImageStyle() {
+            return document.getElementById("image").getAttribute("style") !== window.imageStyle;
+          });
+        },
+        function then() {
+          test.assertNotEquals(this.getElementAttribute("#image", "style"), imageStyle, "Image refreshed");
+        });
       });
     });
 

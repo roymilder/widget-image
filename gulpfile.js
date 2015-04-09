@@ -3,21 +3,20 @@
 (function () {
   "use strict";
 
+  var bump = require("gulp-bump");
+  var del = require("del");
+  var factory = require("widget-tester").gulpTaskFactory;
   var gulp = require("gulp");
   var gutil = require("gulp-util");
-  var rimraf = require("gulp-rimraf");
-  var concat = require("gulp-concat");
-  var bump = require("gulp-bump");
+  var htmlreplace = require("gulp-html-replace");
   var jshint = require("gulp-jshint");
   var minifyCSS = require("gulp-minify-css");
-  var usemin = require("gulp-usemin");
-  var uglify = require("gulp-uglify");
-  var runSequence = require("run-sequence");
   var path = require("path");
   var rename = require("gulp-rename");
+  var runSequence = require("run-sequence");
   var sourcemaps = require("gulp-sourcemaps");
-  var htmlreplace = require("gulp-html-replace");
-  var factory = require("widget-tester").gulpTaskFactory;
+  var uglify = require("gulp-uglify");
+  var usemin = require("gulp-usemin");
 
   var appJSFiles = [
       "src/**/*.js",
@@ -28,13 +27,12 @@
       "./src/widget.html"
     ];
 
-  gulp.task("clean", function () {
-    return gulp.src("dist", {read: false})
-      .pipe(rimraf());
+  gulp.task("clean", function (cb) {
+    del(["./dist/**"], cb);
   });
 
   gulp.task("config", function() {
-    var env = process.env.NODE_ENV || "dev";
+    var env = process.env.NODE_ENV || "prod";
     gutil.log("Environment is", env);
 
     return gulp.src(["./src/config/" + env + ".js"])
@@ -77,7 +75,7 @@
   });
 
   gulp.task("fonts", function() {
-    return gulp.src("src/components/common-style/dist/fonts/**/*")
+    return gulp.src("src/components/rv-common-style/dist/fonts/**/*")
       .pipe(gulp.dest("dist/fonts"));
   });
 
@@ -92,7 +90,7 @@
       "src/components/webcomponentsjs/webcomponents.min.js",
       "src/components/underscore/underscore*.*",
       "src/components/rise-storage/rise-storage.html",
-      "src/components/polymer/**/*.*{html,js}",
+      "src/components/polymer/*.*{html,js}",
       "src/components/core-ajax/core-ajax.html",
       "src/components/core-ajax/core-xhr.html"
     ], {base: "./src/"})
@@ -126,7 +124,7 @@
     return gulp.src("./src/widget.html")
       .pipe(htmlreplace({
         e2egadgets: "../node_modules/widget-tester/mocks/gadget-mocks.js",
-        e2eMockData: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js",
+        e2eMockData: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.14.1.js",
           "../test/data/url.js"]
       }))
       .pipe(rename(function (path) {
@@ -139,8 +137,7 @@
     return gulp.src("./src/widget.html")
       .pipe(htmlreplace({
         e2egadgets: "../node_modules/widget-tester/mocks/gadget-mocks.js",
-        e2eMockData: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.12.2.js",
-          "../test/data/storage.js"],
+        e2eMockData: "../test/data/storage.js",
         e2eStorageMock: "../node_modules/widget-tester/mocks/rise-storage-mock.js"
       }))
       .pipe(rename(function (path) {

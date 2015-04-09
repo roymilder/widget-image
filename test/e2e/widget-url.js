@@ -12,10 +12,14 @@ casper.test.begin("Image Widget - URL - e2e Testing", {
 
     casper.thenOpen(url, function () {
       test.assertTitle("Image Widget", "Test page has loaded");
+
+      casper.evaluate(function() {
+        window.clock = sinon.useFakeTimers();
+      });
     });
 
     casper.then(function () {
-      casper.evaluate(function (){
+      casper.evaluate(function () {
         var evt = document.createEvent("CustomEvent");
 
         evt.initCustomEvent("polymer-ready", false, false);
@@ -30,36 +34,34 @@ casper.test.begin("Image Widget - URL - e2e Testing", {
       function then() {
         test.assertExists(".scale-to-fit", "Scale to fit");
         test.assertExists(".middle-center", "Alignment");
-        test.assertEquals(this.getElementAttribute("#image", "style"),
-          "background-image: url(http://s3.amazonaws.com/rise-common/images/logo-small.png); ", "Image");
         test.assertEquals(this.getElementAttribute("body", "style"),
           "background-image: initial; background-attachment: initial; background-origin: initial; " +
           "background-clip: initial; background-color: rgb(204, 204, 204); " +
           "background-position: initial initial; background-repeat: initial initial; ",
           "Background color");
+        test.assertEquals(this.getElementAttribute("#image", "style"),
+          "background-image: url(http://s3.amazonaws.com/rise-common/images/logo-small.png?cb=0); ", "Image");
 
-        /* TODO: Test that image is refreshed. */
-        // casper.evaluate(function() {
-        //   window.clock = sinon.useFakeTimers();
-        // });
+        // Image Refresh
+        casper.evaluate(function() {
+          window.clock.tick(300000);
+        });
 
-        // casper.waitFor(function waitForTimer() {
-        //   return this.evaluate(function expireTimer() {
-        //     window.clock.tick(900000);
+        casper.waitFor(function waitForTimer() {
+          return this.evaluate(function expireTimer() {
+            return document.getElementById("image").getAttribute("style") ===
+              "background-image: url(http://s3.amazonaws.com/rise-common/images/logo-small.png?cb=300000); ";
+          });
+        },
+        function then() {
+          this.evaluate(function() {
+            window.clock.restore();
+          });
 
-        //     return document.getElementById("image").getAttribute("style") !==
-        //       "background-image: url(http://s3.amazonaws.com/rise-common/images/logo-small.png); ";
-        //   });
-        // },
-        // function then() {
-        //   this.evaluate(function() {
-        //     window.clock.restore();
-        //   });
-
-        //   test.assertNotEquals(this.getElementAttribute("#image", "style"),
-        //     "background-image: url(http://s3.amazonaws.com/rise-common/images/logo-small.png); ",
-        //     "Image is refreshed");
-        //});
+          test.assertEquals(this.getElementAttribute("#image", "style"),
+            "background-image: url(http://s3.amazonaws.com/rise-common/images/logo-small.png?cb=300000); ",
+            "Image refreshed");
+        });
       });
     });
 

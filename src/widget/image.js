@@ -10,7 +10,7 @@ RiseVision.Image = (function (gadgets) {
     prefs = new gadgets.Prefs(),
     img = document.getElementById("image"),
     separator = "",
-    refreshInterval = 900000;  // 15 minutes
+    refreshInterval = 300000;  // 5 minutes
 
   /*
    *  Private Methods
@@ -33,7 +33,7 @@ RiseVision.Image = (function (gadgets) {
         separator = "&";
       }
 
-      img.style.backgroundImage = "url(" + params.url + ")";
+      img.style.backgroundImage = "url(" + params.url + separator + "cb=" + new Date().getTime() + ")";
       startTimer();
       ready();
     }

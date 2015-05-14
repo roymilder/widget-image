@@ -14,7 +14,7 @@ RiseVision.Image.Storage = function (params) {
       img = document.getElementById("image");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      if (e.detail && e.detail.files && e.detail.files.length > 0) {
+      if (e.detail && e.detail.files && (e.detail.files.length > 0) && e.detail.files[0].url) {
         img.style.backgroundImage = "url(" + e.detail.files[0].url + ")";
       }
 

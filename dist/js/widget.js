@@ -16,7 +16,7 @@ RiseVision.Image = (function (gadgets) {
     prefs = new gadgets.Prefs(),
     img = document.getElementById("image"),
     separator = "",
-    refreshInterval = 900000;  // 15 minutes
+    refreshInterval = 300000;  // 5 minutes
 
   /*
    *  Private Methods
@@ -39,7 +39,7 @@ RiseVision.Image = (function (gadgets) {
         separator = "&";
       }
 
-      img.style.backgroundImage = "url(" + params.url + ")";
+      img.style.backgroundImage = "url(" + params.url + separator + "cb=" + new Date().getTime() + ")";
       startTimer();
       ready();
     }
@@ -98,7 +98,7 @@ RiseVision.Image.Storage = function (params) {
       img = document.getElementById("image");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      if (e.detail && e.detail.files && e.detail.files.length > 0) {
+      if (e.detail && e.detail.files && (e.detail.files.length > 0) && e.detail.files[0].url) {
         img.style.backgroundImage = "url(" + e.detail.files[0].url + ")";
       }
 

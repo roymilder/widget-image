@@ -1,3 +1,4 @@
+/* global config */
 var RiseVision = RiseVision || {};
 RiseVision.Image = RiseVision.Image || {};
 
@@ -14,19 +15,28 @@ RiseVision.Image.Storage = function (params) {
       img = document.getElementById("image");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      if (e.detail && e.detail.files && (e.detail.files.length > 0) && e.detail.files[0].url) {
-        img.style.backgroundImage = "url(" + e.detail.files[0].url + ")";
-      }
-
       if (isLoading) {
+        if (e.detail && e.detail.url) {
+          img.style.backgroundImage = "url(" + e.detail.url + ")";
+        }
+
         RiseVision.Image.ready();
         isLoading = false;
+      }
+      else {
+        if (e.detail && e.detail.url) {
+          // Image has been changed.
+          if (e.detail.hasOwnProperty("changed") && e.detail.changed) {
+            img.style.backgroundImage = "url(" + e.detail.url + ")";
+          }
+        }
       }
     });
 
     storage.setAttribute("folder", params.storage.folder);
     storage.setAttribute("fileName", params.storage.fileName);
     storage.setAttribute("companyId", params.storage.companyId);
+    storage.setAttribute("env", config.STORAGE_ENV);
     storage.go();
   }
 

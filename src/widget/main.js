@@ -12,7 +12,7 @@
     return false;
   };
 
-  window.addEventListener("polymer-ready", function() {
+  window.addEventListener("WebComponentsReady", function() {
     gadgets.rpc.register("rsparam_set_" + id, RiseVision.Image.getAdditionalParams);
     gadgets.rpc.call("", "rsparam_get", null, id, ["additionalParams"]);
   });

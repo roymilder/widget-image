@@ -11,10 +11,10 @@
         "fileName": "moon.jpg",
         "companyId": "b428b4e8-c8b9-41d5-8a10-b4193c789443"
       },
-      "scaleToFit": false,
+      "scaleToFit": true,
       "position": "top-left",
       "background": {
-        "color": "transparent"
+        "color": "rgb(217, 234, 211)"
       }
     }
   };

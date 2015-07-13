@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Image Widget</title>
+
+  <script src="../../src/components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/components/web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../../src/components/rise-storage/rise-storage.html">
+</head>
+<body>
+  <rise-storage refresh="5"></rise-storage>
+
+  <div id="container">
+    <div id="image"></div>
+  </div>
+
+  <script src="//rvashow2.appspot.com/gadgets/gadgets.min.js"></script>
+
+  <script src="../data/storage.js"></script>
+
+  <script src="../../node_modules/widget-tester/mocks/gadget-mocks.js"></script>
+
+  <script src="../../src/config/config.js"></script>
+  <script src="../../src/widget/image.js"></script>
+  <script src="../../src/widget/storage.js"></script>
+  <script src="../../src/widget/main.js"></script>
+
+  <script>
+    suite("Image Widget", function() {
+      var storage = document.querySelector("rise-storage"),
+        spy = sinon.spy(storage.$.storage, "generateRequest"),
+        responded = false,
+        listener, clock;
+
+      suiteSetup(function() {
+        listener = function(response) {
+          responded = true;
+          clock = sinon.useFakeTimers();
+          storage.removeEventListener("rise-storage-response", listener);
+        };
+
+        storage.addEventListener("rise-storage-response", listener);
+      });
+
+      suiteTeardown(function() {
+        clock.restore();
+      });
+
+      var check = function(done) {
+        if (responded) {
+          done();
+        }
+        else {
+          setTimeout(function() {
+            check(done)
+          }, 1000);
+        }
+      }
+
+      // Don't run the tests until rise-storage-response has fired.
+      setup(function(done) {
+        check(done);
+      });
+
+      test("should align image at top left", function() {
+        assert.isNotNull(document.querySelector(".top-left"));
+      });
+
+      test("should scale image to fit", function() {
+        assert.isNotNull(document.querySelector(".scale-to-fit"));
+      });
+
+      test("should set background color", function() {
+        assert.equal(document.body.style.background, "rgb(217, 234, 211)");
+      });
+
+      test("should set folder attribute of storage component", function() {
+        assert.equal(storage.folder, "Widgets");
+      });
+
+      test("should set filename attribute of storage component", function() {
+        assert.equal(storage.filename, "moon.jpg");
+      });
+
+      test("should set companyid attribute of storage component", function() {
+        assert.equal(storage.companyid, "b428b4e8-c8b9-41d5-8a10-b4193c789443");
+      });
+
+      test("should set env attribute of storage component", function() {
+        assert.equal(storage.env, config.STORAGE_ENV);
+      });
+
+      test("should set background image", function() {
+        assert.equal(document.getElementById("image").style.backgroundImage,
+          'url(https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fmoon.jpg?alt=media)');
+      });
+
+      test("should refresh background image", function() {
+        clock.tick(300000);
+
+        assert(spy.calledTwice);
+      });
+    });
+  </script>
+</body>
+</html>

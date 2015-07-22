@@ -17,6 +17,7 @@
   var sourcemaps = require("gulp-sourcemaps");
   var uglify = require("gulp-uglify");
   var usemin = require("gulp-usemin");
+  var wct = require("web-component-tester").gulp.init(gulp);
 
   var appJSFiles = [
       "src/**/*.js",
@@ -91,8 +92,9 @@
       "src/components/underscore/underscore*.*",
       "src/components/rise-storage/rise-storage.html",
       "src/components/polymer/*.*{html,js}",
-      "src/components/core-ajax/core-ajax.html",
-      "src/components/core-ajax/core-xhr.html"
+      "src/components/promise-polyfill/*.*{html,js}",
+      "src/components/iron-ajax/iron-ajax.html",
+      "src/components/iron-ajax/iron-request.html"
     ], {base: "./src/"})
       .pipe(gulp.dest("dist/"));
   });
@@ -120,7 +122,7 @@
   });
 
   // Widget
-  gulp.task("html:e2e:widget:url", function () {
+  gulp.task("html:e2e:widget", function () {
     return gulp.src("./src/widget.html")
       .pipe(htmlreplace({
         e2egadgets: "../node_modules/widget-tester/mocks/gadget-mocks.js",
@@ -131,23 +133,6 @@
         path.basename += "-url-e2e";
       }))
       .pipe(gulp.dest("./src/"));
-  });
-
-  gulp.task("html:e2e:widget:storage", function () {
-    return gulp.src("./src/widget.html")
-      .pipe(htmlreplace({
-        e2egadgets: "../node_modules/widget-tester/mocks/gadget-mocks.js",
-        e2eMockData: "../test/data/storage.js",
-        e2eStorageMock: "../node_modules/widget-tester/mocks/rise-storage-mock.js"
-      }))
-      .pipe(rename(function (path) {
-        path.basename += "-storage-e2e";
-      }))
-      .pipe(gulp.dest("./src/"));
-  });
-
-  gulp.task("html:e2e:widget", function (cb) {
-    runSequence("html:e2e:widget:url", "html:e2e:widget:storage", cb);
   });
 
   gulp.task("e2e:server:widget", ["config", "html:e2e:widget"], factory.testServer());
@@ -166,8 +151,13 @@
     runSequence("test:e2e:settings", "test:e2e:widget", cb);
   });
 
+  // Integration testing
+  gulp.task("test:integration", function(cb) {
+    runSequence("test:local", cb);
+  });
+
   gulp.task("test", function(cb) {
-    runSequence("test:e2e", cb);
+    runSequence("test:e2e", "test:integration", cb);
   });
 
   gulp.task("build", function (cb) {

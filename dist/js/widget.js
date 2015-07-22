@@ -1,7 +1,15 @@
+/* global config: true */
+/* exported config */
 if (typeof angular !== "undefined") {
   angular.module("risevision.common.i18n.config", [])
     .constant("LOCALES_PREFIX", "locales/translation_")
     .constant("LOCALES_SUFIX", ".json");
+}
+
+if (typeof config === "undefined") {
+  var config = {
+    STORAGE_ENV: "prod"
+  };
 }
 
 /* global gadgets */
@@ -82,6 +90,7 @@ RiseVision.Image = (function (gadgets) {
   };
 })(gadgets);
 
+/* global config */
 var RiseVision = RiseVision || {};
 RiseVision.Image = RiseVision.Image || {};
 
@@ -98,19 +107,28 @@ RiseVision.Image.Storage = function (params) {
       img = document.getElementById("image");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      if (e.detail && e.detail.files && (e.detail.files.length > 0) && e.detail.files[0].url) {
-        img.style.backgroundImage = "url(" + e.detail.files[0].url + ")";
-      }
-
       if (isLoading) {
+        if (e.detail && e.detail.url) {
+          img.style.backgroundImage = "url(" + e.detail.url + ")";
+        }
+
         RiseVision.Image.ready();
         isLoading = false;
+      }
+      else {
+        if (e.detail && e.detail.url) {
+          // Image has been changed.
+          if (e.detail.hasOwnProperty("changed") && e.detail.changed) {
+            img.style.backgroundImage = "url(" + e.detail.url + ")";
+          }
+        }
       }
     });
 
     storage.setAttribute("folder", params.storage.folder);
     storage.setAttribute("fileName", params.storage.fileName);
     storage.setAttribute("companyId", params.storage.companyId);
+    storage.setAttribute("env", config.STORAGE_ENV);
     storage.go();
   }
 
@@ -133,7 +151,7 @@ RiseVision.Image.Storage = function (params) {
     return false;
   };
 
-  window.addEventListener("polymer-ready", function() {
+  window.addEventListener("WebComponentsReady", function() {
     gadgets.rpc.register("rsparam_set_" + id, RiseVision.Image.getAdditionalParams);
     gadgets.rpc.call("", "rsparam_get", null, id, ["additionalParams"]);
   });

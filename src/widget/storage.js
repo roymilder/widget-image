@@ -17,7 +17,8 @@ RiseVision.Image.Storage = function (params) {
     storage.addEventListener("rise-storage-response", function(e) {
       if (isLoading) {
         if (e.detail && e.detail.url) {
-          img.style.backgroundImage = "url(" + e.detail.url + ")";
+          // Escape single quotes.
+          img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
         }
 
         RiseVision.Image.ready();
@@ -27,7 +28,8 @@ RiseVision.Image.Storage = function (params) {
         if (e.detail && e.detail.url) {
           // Image has been changed.
           if (e.detail.hasOwnProperty("changed") && e.detail.changed) {
-            img.style.backgroundImage = "url(" + e.detail.url + ")";
+            // Escape single quotes.
+            img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
           }
         }
       }

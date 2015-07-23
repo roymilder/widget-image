@@ -5,10 +5,10 @@
   window.gadget.settings = {
     "params": {},
     "additionalParams": {
-      "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fmoon.jpg",
+      "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson's.jpg",
       "storage": {
         "folder": "Widgets",
-        "fileName": "moon.jpg",
+        "fileName": "simpson's.jpg",
         "companyId": "b428b4e8-c8b9-41d5-8a10-b4193c789443"
       },
       "scaleToFit": true,

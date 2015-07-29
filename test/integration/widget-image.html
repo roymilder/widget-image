@@ -35,73 +35,113 @@
         responded = false,
         listener, clock;
 
-      suiteSetup(function() {
-        listener = function(response) {
-          responded = true;
-          clock = sinon.useFakeTimers();
-          storage.removeEventListener("rise-storage-response", listener);
-        };
+      suite("initialize", function() {
+        suiteSetup(function() {
+          listener = function(response) {
+            responded = true;
+            clock = sinon.useFakeTimers();
+            storage.removeEventListener("rise-storage-response", listener);
+          };
 
-        storage.addEventListener("rise-storage-response", listener);
-      });
+          storage.addEventListener("rise-storage-response", listener);
+        });
 
-      suiteTeardown(function() {
-        clock.restore();
-      });
+        suiteTeardown(function() {
+          clock.restore();
+        });
 
-      var check = function(done) {
-        if (responded) {
-          done();
+        var check = function(done) {
+          if (responded) {
+            done();
+          }
+          else {
+            setTimeout(function() {
+              check(done)
+            }, 1000);
+          }
         }
-        else {
-          setTimeout(function() {
-            check(done)
-          }, 1000);
-        }
-      }
 
-      // Don't run the tests until rise-storage-response has fired.
-      setup(function(done) {
-        check(done);
+        // Don't run the tests until rise-storage-response has fired.
+        setup(function(done) {
+          check(done);
+        });
+
+        test("should align image at top left", function() {
+          assert.isNotNull(document.querySelector(".top-left"));
+        });
+
+        test("should scale image to fit", function() {
+          assert.isNotNull(document.querySelector(".scale-to-fit"));
+        });
+
+        test("should set background color", function() {
+          assert.equal(document.body.style.background, "rgb(217, 234, 211)");
+        });
+
+        test("should set folder attribute of storage component", function() {
+          assert.equal(storage.folder, "Widgets");
+        });
+
+        test("should set filename attribute of storage component", function() {
+          assert.equal(storage.filename, "simpson's.jpg");
+        });
+
+        test("should set companyid attribute of storage component", function() {
+          assert.equal(storage.companyid, "b428b4e8-c8b9-41d5-8a10-b4193c789443");
+        });
+
+        test("should set env attribute of storage component", function() {
+          assert.equal(storage.env, config.STORAGE_ENV);
+        });
+
+        test("should set background image", function() {
+          assert.equal(document.getElementById("image").style.backgroundImage,
+            'url(\'https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fsimpson\\\'s.jpg?alt=media\')');
+        });
       });
 
-      test("should align image at top left", function() {
-        assert.isNotNull(document.querySelector(".top-left"));
+      suite("refresh", function() {
+        test("should refresh background image after 5 minutes", function() {
+          clock.tick(299999);
+          assert(spy.calledOnce, "spy not called yet");
+
+          clock.tick(300000);
+          assert(spy.calledTwice, "spy called");
+        });
       });
 
-      test("should scale image to fit", function() {
-        assert.isNotNull(document.querySelector(".scale-to-fit"));
+      suite("update", function() {
+        suiteSetup(function() {
+          storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+            "detail": {
+              "changed": true,
+              "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson's.jpg"
+            },
+            "bubbles": true
+          }));
+        });
+
+        test("should set background image", function() {
+          assert.equal(document.getElementById("image").style.backgroundImage,
+            'url(\'https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson\\\'s.jpg\')');
+        });
       });
 
-      test("should set background color", function() {
-        assert.equal(document.body.style.background, "rgb(217, 234, 211)");
-      });
+      suite("no quotes in image URL", function() {
+        suiteSetup(function() {
+          storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+            "detail": {
+              "changed": true,
+              "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg"
+            },
+            "bubbles": true
+          }));
+        });
 
-      test("should set folder attribute of storage component", function() {
-        assert.equal(storage.folder, "Widgets");
-      });
-
-      test("should set filename attribute of storage component", function() {
-        assert.equal(storage.filename, "moon.jpg");
-      });
-
-      test("should set companyid attribute of storage component", function() {
-        assert.equal(storage.companyid, "b428b4e8-c8b9-41d5-8a10-b4193c789443");
-      });
-
-      test("should set env attribute of storage component", function() {
-        assert.equal(storage.env, config.STORAGE_ENV);
-      });
-
-      test("should set background image", function() {
-        assert.equal(document.getElementById("image").style.backgroundImage,
-          'url(https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fmoon.jpg?alt=media)');
-      });
-
-      test("should refresh background image", function() {
-        clock.tick(300000);
-
-        assert(spy.calledTwice);
+        test("should set background image", function() {
+          assert.equal(document.getElementById("image").style.backgroundImage,
+            'url(https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg)');
+        });
       });
     });
   </script>

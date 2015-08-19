@@ -6826,9 +6826,9 @@ app.run(["$templateCache", function($templateCache) {
 }());
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.url-field"); }
-catch(err) { app = angular.module("risevision.widget.common.url-field", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.url-field"); }
+catch(err) { module = angular.module("risevision.widget.common.url-field", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("_angular/url-field/url-field.html",
     "<div class=\"form-group\" >\n" +
@@ -6843,10 +6843,8 @@ app.run(["$templateCache", function($templateCache) {
     "  <div class=\"checkbox\" ng-show=\"forcedValid || !valid\">\n" +
     "    <label>\n" +
     "      <input name=\"validate-url\" ng-click=\"doValidation = !doValidation\" type=\"checkbox\"\n" +
-    "             value=\"validate-url\" checked=\"checked\"> {{\"url.validate.label\" | translate}}\n" +
+    "             value=\"validate-url\"> {{\"url.validate.label\" | translate}}\n" +
     "    </label>\n" +
-    "    <span popover=\"{{'url.validate.tooltip' | translate}}\" popover-trigger=\"click\"\n" +
-    "          popover-placement=\"top\" rv-tooltip></span>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
@@ -6878,9 +6876,9 @@ app.run(["$templateCache", function($templateCache) {
 }());
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.position-setting"); }
-catch(err) { app = angular.module("risevision.widget.common.position-setting", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.position-setting"); }
+catch(err) { module = angular.module("risevision.widget.common.position-setting", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("_angular/position-setting/position-setting.html",
     "<div class=\"row\">\n" +
@@ -9185,9 +9183,9 @@ app.run(["$templateCache", function($templateCache) {
 }());
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.background-setting"); }
-catch(err) { app = angular.module("risevision.widget.common.background-setting", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.background-setting"); }
+catch(err) { module = angular.module("risevision.widget.common.background-setting", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("_angular/background-setting/background-setting.html",
     "<div class=\"section\">\n" +
@@ -9236,9 +9234,9 @@ app.run(["$templateCache", function($templateCache) {
 }());
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.widget-button-toolbar"); }
-catch(err) { app = angular.module("risevision.widget.common.widget-button-toolbar", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.widget-button-toolbar"); }
+catch(err) { module = angular.module("risevision.widget.common.widget-button-toolbar", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("_angular/widget-button-toolbar/widget-button-toolbar.html",
     "<div class=\"btn-toolbar sticky-buttons\">\n" +

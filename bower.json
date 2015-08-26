@@ -24,13 +24,13 @@
   "dependencies": {
     "angular": "1.2.18",
     "angular-route": "1.2.18",
-    "rise-storage": "https://github.com/Rise-Vision/web-component-rise-storage.git#1.0.12",
+    "rise-storage": "https://github.com/Rise-Vision/web-component-rise-storage.git#1.0.15",
     "rv-common-style": "https://github.com/Rise-Vision/common-style.git#1.1.12",
-    "webcomponentsjs": "^0.7.2",
-    "widget-settings-ui-components": "https://github.com/Rise-Vision/widget-settings-ui-components.git#0.1.12",
+    "webcomponentsjs": "~0.7.11",
+    "widget-settings-ui-components": "https://github.com/Rise-Vision/widget-settings-ui-components.git#1.0.0",
     "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git#0.1.11"
   },
   "resolutions": {
-    "rv-common-style": "1.1.12"
+    "angular": "1.2.18"
   }
 }

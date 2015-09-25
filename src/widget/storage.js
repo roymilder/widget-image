@@ -5,8 +5,6 @@ RiseVision.Image = RiseVision.Image || {};
 RiseVision.Image.Storage = function (params) {
   "use strict";
 
-  var isLoading = true;
-
   /*
    *  Public Methods
    */
@@ -15,24 +13,19 @@ RiseVision.Image.Storage = function (params) {
       img = document.getElementById("image");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      if (isLoading) {
-        if (e.detail && e.detail.url) {
-          // Escape single quotes.
-          img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
-        }
+      if (e.detail && e.detail.url) {
+        // Escape single quotes.
+        img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
 
-        RiseVision.Image.ready();
-        isLoading = false;
+        RiseVision.Image.storageFileUpdate();
       }
-      else {
-        if (e.detail && e.detail.url) {
-          // Image has been changed.
-          if (e.detail.hasOwnProperty("changed") && e.detail.changed) {
-            // Escape single quotes.
-            img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
-          }
-        }
-      }
+    });
+
+    storage.addEventListener("rise-storage-no-file", function() {
+      // clear the existing image
+      img.style.background = "";
+
+      RiseVision.Image.noStorageFile();
     });
 
     storage.setAttribute("folder", params.storage.folder);

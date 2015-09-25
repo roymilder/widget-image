@@ -10,6 +10,7 @@ RiseVision.Image = (function (gadgets) {
     prefs = new gadgets.Prefs(),
     img = document.getElementById("image"),
     separator = "",
+    message = null,
     refreshInterval = 300000;  // 5 minutes
 
   /*
@@ -39,9 +40,22 @@ RiseVision.Image = (function (gadgets) {
     }
     // Rise Storage
     else {
+      // create instance of message
+      message = new RiseVision.Common.Message(document.getElementById("container"),
+        document.getElementById("messageContainer"));
+
+      // show wait message while Storage initializes
+      message.show("Please wait while your image is downloaded.");
+
       storage = new RiseVision.Image.Storage(params);
       storage.init();
+
+      ready();
     }
+  }
+
+  function noStorageFile() {
+    message.show("The selected image does not exist.");
   }
 
   function startTimer() {
@@ -70,8 +84,14 @@ RiseVision.Image = (function (gadgets) {
       false, false, true, false);
   }
 
+  function storageFileUpdate() {
+    // remove a message previously shown
+    message.hide();
+  }
+
   return {
-    "ready": ready,
-    "getAdditionalParams": getAdditionalParams
+    "getAdditionalParams": getAdditionalParams,
+    "noStorageFile": noStorageFile,
+    "storageFileUpdate": storageFileUpdate
   };
 })(gadgets);

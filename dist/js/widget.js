@@ -24,6 +24,7 @@ RiseVision.Image = (function (gadgets) {
     prefs = new gadgets.Prefs(),
     img = document.getElementById("image"),
     separator = "",
+    message = null,
     refreshInterval = 300000;  // 5 minutes
 
   /*
@@ -53,9 +54,22 @@ RiseVision.Image = (function (gadgets) {
     }
     // Rise Storage
     else {
+      // create instance of message
+      message = new RiseVision.Common.Message(document.getElementById("container"),
+        document.getElementById("messageContainer"));
+
+      // show wait message while Storage initializes
+      message.show("Please wait while your image is downloaded.");
+
       storage = new RiseVision.Image.Storage(params);
       storage.init();
+
+      ready();
     }
+  }
+
+  function noStorageFile() {
+    message.show("The selected image does not exist.");
   }
 
   function startTimer() {
@@ -84,11 +98,88 @@ RiseVision.Image = (function (gadgets) {
       false, false, true, false);
   }
 
+  function storageFileUpdate() {
+    // remove a message previously shown
+    message.hide();
+  }
+
   return {
-    "ready": ready,
-    "getAdditionalParams": getAdditionalParams
+    "getAdditionalParams": getAdditionalParams,
+    "noStorageFile": noStorageFile,
+    "storageFileUpdate": storageFileUpdate
   };
 })(gadgets);
+
+var RiseVision = RiseVision || {};
+RiseVision.Common = RiseVision.Common || {};
+
+RiseVision.Common.Message = function (mainContainer, messageContainer) {
+  "use strict";
+
+  var _active = false;
+
+  function _init() {
+    try {
+      messageContainer.style.height = mainContainer.style.height;
+    } catch (e) {
+      console.warn("Can't initialize Message - ", e.message);
+    }
+  }
+
+  /*
+   *  Public Methods
+   */
+  function hide() {
+    if (_active) {
+      // clear content of message container
+      while (messageContainer.firstChild) {
+        messageContainer.removeChild(messageContainer.firstChild);
+      }
+
+      // hide message container
+      messageContainer.style.display = "none";
+
+      // show main container
+      mainContainer.style.visibility = "visible";
+
+      _active = false;
+    }
+  }
+
+  function show(message) {
+    var fragment = document.createDocumentFragment(),
+      p;
+
+    if (!_active) {
+      // hide main container
+      mainContainer.style.visibility = "hidden";
+
+      messageContainer.style.display = "block";
+
+      // create message element
+      p = document.createElement("p");
+      p.innerHTML = message;
+      p.setAttribute("class", "message");
+      p.style.lineHeight = messageContainer.style.height;
+
+      fragment.appendChild(p);
+      messageContainer.appendChild(fragment);
+
+      _active = true;
+    } else {
+      // message already being shown, update message text
+      p = messageContainer.querySelector(".message");
+      p.innerHTML = message;
+    }
+  }
+
+  _init();
+
+  return {
+    "hide": hide,
+    "show": show
+  };
+};
 
 /* global config */
 var RiseVision = RiseVision || {};
@@ -96,8 +187,6 @@ RiseVision.Image = RiseVision.Image || {};
 
 RiseVision.Image.Storage = function (params) {
   "use strict";
-
-  var isLoading = true;
 
   /*
    *  Public Methods
@@ -107,24 +196,19 @@ RiseVision.Image.Storage = function (params) {
       img = document.getElementById("image");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      if (isLoading) {
-        if (e.detail && e.detail.url) {
-          // Escape single quotes.
-          img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
-        }
+      if (e.detail && e.detail.url) {
+        // Escape single quotes.
+        img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
 
-        RiseVision.Image.ready();
-        isLoading = false;
+        RiseVision.Image.storageFileUpdate();
       }
-      else {
-        if (e.detail && e.detail.url) {
-          // Image has been changed.
-          if (e.detail.hasOwnProperty("changed") && e.detail.changed) {
-            // Escape single quotes.
-            img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
-          }
-        }
-      }
+    });
+
+    storage.addEventListener("rise-storage-no-file", function() {
+      // clear the existing image
+      img.style.background = "";
+
+      RiseVision.Image.noStorageFile();
     });
 
     storage.setAttribute("folder", params.storage.folder);

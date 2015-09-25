@@ -52,7 +52,7 @@ gulp build
 The source code for the Widget can be found in the `src` folder, and this is where you can make any necessary code changes.
 
 ### Run Locally
-To preview Widgets locally, you'll need to use the [Widget Preview](https://github.com/Rise-Vision/widget-preview) app available [here](http://192.254.220.36/~rvi/widget-preview/).
+To preview Widgets locally, you'll need to use the [Widget Preview](https://github.com/Rise-Vision/widget-preview) app.
 
 ### Testing
 Execute the following command in Terminal to run both end-to-end and unit tests:

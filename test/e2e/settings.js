@@ -60,25 +60,44 @@
 
     it("Save button should be enabled when a valid image URL is entered", function () {
       element(by.model("url")).sendKeys(validImageUrl);
-      element(by.id("save")).click();
       expect(element(by.css("#save[disabled=disabled]")).isPresent()).to.eventually.be.false;
     });
 
     it("ng-valid should be true when a valid image URL is entered", function () {
       element(by.model("url")).sendKeys(validImageUrl);
-      element(by.id("save")).click();
       expect(element(by.css("form[name=settingsForm].ng-valid")).isPresent()).to.eventually.be.true;
     });
 
     it("Invalid image error should be shown when saving an image that does not exist", function () {
       element(by.model("url")).sendKeys(invalidImageUrl);
       element(by.id("save")).click();
+
+      browser.wait(function() {
+        var deferred = protractor.promise.defer();
+        element(by.id("invalid-image-error")).isDisplayed()
+          .then(function (isVisible) {
+            deferred.fulfill(isVisible);
+          });
+        return deferred.promise;
+      }, 1000);
+
       expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.true;
+
     });
 
     it("Invalid image error should be hidden when saving a valid image URL", function () {
       element(by.model("url")).sendKeys(validImageUrl);
       element(by.id("save")).click();
+
+      browser.wait(function() {
+        var deferred = protractor.promise.defer();
+        element(by.id("invalid-image-error")).isDisplayed()
+          .then(function (isVisible) {
+            deferred.fulfill(!isVisible);
+          });
+        return deferred.promise;
+      }, 1000);
+
       expect(element(by.id("invalid-image-error")).isDisplayed()).to.eventually.be.false;
     });
 
@@ -99,6 +118,15 @@
 
       element(by.model("url")).sendKeys(validImageUrl);
       element(by.id("save")).click();
+
+      browser.wait(function() {
+        var deferred = protractor.promise.defer();
+        element(by.id("invalid-image-error")).isDisplayed()
+          .then(function (isVisible) {
+            deferred.fulfill(!isVisible);
+          });
+        return deferred.promise;
+      }, 1000);
 
       expect(browser.executeScript("return window.result")).to.eventually.deep.equal({
         "params": "",

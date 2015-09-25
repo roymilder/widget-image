@@ -16,7 +16,7 @@ casper.test.begin("Image Widget - URL - e2e Testing", {
       test.assertTitle("Image Widget", "Test page has loaded");
 
       casper.evaluate(function() {
-        //window.clock = sinon.useFakeTimers();
+        window.clock = sinon.useFakeTimers();
       });
     });
 
@@ -54,7 +54,7 @@ casper.test.begin("Image Widget - URL - e2e Testing", {
 
         // Image Refresh
         casper.evaluate(function() {
-          //window.clock.tick(300000);
+          window.clock.tick(300000);
         });
 
         casper.waitFor(function waitForTimer() {
@@ -64,7 +64,7 @@ casper.test.begin("Image Widget - URL - e2e Testing", {
         },
         function then() {
           this.evaluate(function() {
-            //window.clock.restore();
+            window.clock.restore();
           });
 
           test.assertNotEquals(this.getElementAttribute("#image", "style"), imageBefore, "Image refreshed");

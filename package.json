@@ -35,10 +35,9 @@
     "jshint-stylish": "^0.2.0",
     "mocha": "^2.1.0",
     "phantomjs": "^1.9.16",
-    "protractor": "~1.0.0",
     "run-sequence": "^0.3.2",
     "sinon": "^1.14.1",
-    "web-component-tester": "^3.3.0",
+    "web-component-tester": "*",
     "widget-tester": "git://github.com/Rise-Vision/widget-tester.git"
   }
 }

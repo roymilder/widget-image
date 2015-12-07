@@ -41,6 +41,10 @@
         responded = false,
         listener, clock;
 
+      sinon.stub(storage.$.ping, "generateRequest", function () {
+        storage._handlePingError();
+      });
+
       suite("initialize", function() {
         suiteSetup(function() {
           listener = function(response) {
@@ -102,7 +106,7 @@
 
         test("should set background image", function() {
           assert.equal(document.getElementById("image").style.backgroundImage,
-            'url(\'https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fsimpson\\\'s.jpg?alt=media\')');
+            'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fsimpson\'s.jpg?alt=media\")');
         });
       });
 
@@ -129,7 +133,7 @@
 
         test("should set background image", function() {
           assert.equal(document.getElementById("image").style.backgroundImage,
-            'url(\'https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson\\\'s.jpg\')');
+            'url(\"https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson\'s.jpg\")');
         });
       });
 
@@ -146,7 +150,7 @@
 
         test("should set background image", function() {
           assert.equal(document.getElementById("image").style.backgroundImage,
-            'url(https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg)');
+            'url("https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg")');
         });
       });
     });

@@ -87,8 +87,7 @@
 
   gulp.task("rise-storage", function() {
     return gulp.src([
-      "src/components/webcomponentsjs/webcomponents.js",
-      "src/components/webcomponentsjs/webcomponents.min.js",
+      "src/components/webcomponentsjs/webcomponents*.js",
       "src/components/underscore/underscore*.*",
       "src/components/rise-storage/rise-storage.html",
       "src/components/polymer/*.*{html,js}",

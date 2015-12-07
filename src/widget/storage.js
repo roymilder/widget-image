@@ -10,22 +10,64 @@ RiseVision.Image.Storage = function (params) {
    */
   function init() {
     var storage = document.querySelector("rise-storage"),
-      img = document.getElementById("image");
+      img = document.getElementById("image"),
+      table = RiseVision.Image.getTableName(),
+      url = "";
 
     storage.addEventListener("rise-storage-response", function(e) {
       if (e.detail && e.detail.url) {
         // Escape single quotes.
-        img.style.backgroundImage = "url('" + e.detail.url.replace("'", "\\'") + "')";
+        url = e.detail.url.replace("'", "\\'");
+        img.style.backgroundImage = "url('" + url + "')";
 
-        RiseVision.Image.storageFileUpdate();
+        RiseVision.Image.storageFileUpdate(url);
       }
     });
 
-    storage.addEventListener("rise-storage-no-file", function() {
+    storage.addEventListener("rise-storage-no-file", function(e) {
+      var params = {
+        "event": "error",
+        "event_details": "storage file not found",
+        "file_url": e.detail
+      };
+
       // clear the existing image
       img.style.background = "";
 
+      RiseVision.Common.LoggerUtils.logEvent(table, params);
       RiseVision.Image.noStorageFile();
+    });
+
+    storage.addEventListener("rise-storage-file-throttled", function(e) {
+      var params = {
+        "event": "error",
+        "event_details": "storage file throttled",
+        "file_url": e.detail
+      };
+
+      RiseVision.Common.LoggerUtils.logEvent(table, params);
+    });
+
+    storage.addEventListener("rise-storage-error", function(e) {
+      var fileUrl = (e.detail && e.detail.request && e.detail.request.url) ? e.detail.request.url : null,
+        params = {
+          "event": "error",
+          "event_details": "storage error",
+          "file_url": fileUrl
+        };
+
+      RiseVision.Common.LoggerUtils.logEvent(table, params);
+    });
+
+    storage.addEventListener("rise-cache-error", function(e) {
+      var fileUrl = (e.detail && e.detail.request && e.detail.request.url) ? e.detail.request.url : null,
+        params = {
+          "event": "error",
+          "event_details": "cache error",
+          "file_url": fileUrl
+        };
+
+      RiseVision.Common.LoggerUtils.logEvent(table, params);
     });
 
     storage.setAttribute("folder", params.storage.folder);

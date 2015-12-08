@@ -11,7 +11,7 @@ RiseVision.Image = (function (gadgets) {
     message = null,
     params = null,
     fileUrl = null,
-    separator = "",
+    separator = "?",
     refreshInterval = 300000;  // 5 minutes
 
   /*
@@ -36,10 +36,7 @@ RiseVision.Image = (function (gadgets) {
         separator = "&";
       }
 
-      fileUrl = params.url + separator + "cb=" + new Date().getTime();
-      img.style.backgroundImage = "url(" + fileUrl + ")";
-
-      startTimer();
+      setBackgroundImage();
       ready();
     }
     // Rise Storage
@@ -64,11 +61,15 @@ RiseVision.Image = (function (gadgets) {
 
   function startTimer() {
     setTimeout(function() {
-      fileUrl = params.url + separator + "cb=" + new Date().getTime();
-      img.style.backgroundImage = "url(" + fileUrl + ")";
-
-      startTimer();
+      setBackgroundImage();
     }, refreshInterval);
+  }
+
+  function setBackgroundImage() {
+    fileUrl = params.url + separator + "cb=" + new Date().getTime();
+    img.style.backgroundImage = "url(" + fileUrl + ")";
+
+    startTimer();
   }
 
   /*

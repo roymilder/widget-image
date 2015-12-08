@@ -25,7 +25,7 @@ RiseVision.Image = (function (gadgets) {
     message = null,
     params = null,
     fileUrl = null,
-    separator = "?",
+    separator = "",
     refreshInterval = 300000;  // 5 minutes
 
   /*

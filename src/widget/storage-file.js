@@ -2,25 +2,44 @@
 var RiseVision = RiseVision || {};
 RiseVision.Image = RiseVision.Image || {};
 
-RiseVision.Image.Storage = function (params) {
+RiseVision.Image.StorageFile = function (params) {
   "use strict";
+
+  var _initialLoad = true;
 
   /*
    *  Public Methods
    */
   function init() {
-    var storage = document.querySelector("rise-storage"),
-      img = document.getElementById("image"),
-      table = RiseVision.Image.getTableName(),
-      url = "";
+    var storage = document.querySelector("rise-storage");
 
     storage.addEventListener("rise-storage-response", function(e) {
-      if (e.detail && e.detail.url) {
-        // Escape single quotes.
-        url = e.detail.url.replace("'", "\\'");
-        img.style.backgroundImage = "url('" + url + "')";
+      var url;
 
-        RiseVision.Image.storageFileUpdate(url);
+      if (e.detail && e.detail.url) {
+
+        url = e.detail.url.replace("'", "\\'");
+
+        if (_initialLoad) {
+          _initialLoad = false;
+
+          RiseVision.Image.onFileInit(url);
+        }
+        else {
+          // check for "changed" property
+          if (e.detail.hasOwnProperty("changed")) {
+            if (e.detail.changed) {
+              RiseVision.Image.onFileRefresh(url);
+            }
+            else {
+              // in the event of a network failure and recovery, check if the Widget is in a state of storage error
+              if (RiseVision.Image.hasStorageError()) {
+                // proceed with refresh logic so the Widget can eventually play video again from a network recovery
+                RiseVision.Image.onFileRefresh(e.detail.url);
+              }
+            }
+          }
+        }
       }
     });
 
@@ -29,13 +48,14 @@ RiseVision.Image.Storage = function (params) {
         "event": "error",
         "event_details": "storage file not found",
         "file_url": e.detail
-      };
+      },
+        img = document.getElementById("image");
 
       // clear the existing image
       img.style.background = "";
 
-      RiseVision.Common.LoggerUtils.logEvent(table, params);
-      RiseVision.Image.noStorageFile();
+      RiseVision.Image.logEvent(params, true);
+      RiseVision.Image.showError("The selected image does not exist or has been moved to Trash.");
     });
 
     storage.addEventListener("rise-storage-file-throttled", function(e) {
@@ -45,7 +65,8 @@ RiseVision.Image.Storage = function (params) {
         "file_url": e.detail
       };
 
-      RiseVision.Common.LoggerUtils.logEvent(table, params);
+      RiseVision.Image.logEvent(params, true);
+      RiseVision.Image.showError("The selected image is temporarily unavailable.");
     });
 
     storage.addEventListener("rise-storage-error", function(e) {
@@ -57,7 +78,8 @@ RiseVision.Image.Storage = function (params) {
           "file_url": fileUrl
         };
 
-      RiseVision.Common.LoggerUtils.logEvent(table, params);
+      RiseVision.Image.logEvent(params, true);
+      RiseVision.Image.showError("Sorry, there was a problem communicating with Rise Storage.", true);
     });
 
     storage.addEventListener("rise-cache-error", function(e) {
@@ -69,7 +91,8 @@ RiseVision.Image.Storage = function (params) {
           "file_url": fileUrl
         };
 
-      RiseVision.Common.LoggerUtils.logEvent(table, params);
+      RiseVision.Image.logEvent(params, true);
+      RiseVision.Image.showError("There was a problem retrieving the file from Rise Cache.");
     });
 
     storage.setAttribute("folder", params.storage.folder);

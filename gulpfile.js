@@ -104,11 +104,9 @@
 
   gulp.task("webdriver_update", factory.webdriveUpdate());
 
-  // e2e testing
-  // Settings
-  gulp.task("html:e2e:settings", factory.htmlE2E({
-    e2eMockData: "../test/data/url.js"
-  }));
+  // ***** e2e Testing ***** //
+
+  gulp.task("html:e2e:settings", factory.htmlE2E());
 
   gulp.task("e2e:server:settings", ["config", "html:e2e:settings"], factory.testServer());
 
@@ -120,34 +118,10 @@
     runSequence(["e2e:server:settings"], "test:e2e:settings:run", "e2e:server-close", cb);
   });
 
-  // Widget
-  gulp.task("html:e2e:widget", function () {
-    return gulp.src("./src/widget.html")
-      .pipe(htmlreplace({
-        e2egadgets: "../node_modules/widget-tester/mocks/gadget-mocks.js",
-        e2eMockData: ["../node_modules/sinon/pkg/sinon.js", "../node_modules/sinon/pkg/sinon-server-1.14.1.js",
-          "../test/data/url.js"]
-      }))
-      .pipe(rename(function (path) {
-        path.basename += "-url-e2e";
-      }))
-      .pipe(gulp.dest("./src/"));
-  });
-
-  gulp.task("e2e:server:widget", ["config", "html:e2e:widget"], factory.testServer());
-
-  gulp.task("test:e2e:widget:run", factory.testE2E({
-      testFiles: "test/e2e/widget-*.js"}
-  ));
-
-  gulp.task("test:e2e:widget", function(cb) {
-    runSequence(["e2e:server:widget"], "test:e2e:widget:run", "e2e:server-close", cb);
-  });
-
   gulp.task("e2e:server-close", factory.testServerClose());
 
   gulp.task("test:e2e", function(cb) {
-    runSequence("test:e2e:settings", "test:e2e:widget", cb);
+    runSequence("test:e2e:settings", cb);
   });
 
   // Integration testing
@@ -155,7 +129,7 @@
     runSequence("test:local", cb);
   });
 
-  // Unit testing
+  // ****** Unit Testing ***** //
   gulp.task("test:unit:settings", factory.testUnitAngular(
     {testFiles: [
       "src/components/jquery/dist/jquery.js",
@@ -176,8 +150,23 @@
       "test/unit/settings/**/*spec.js"]}
   ));
 
+  gulp.task("test:unit:widget", factory.testUnitAngular(
+    {testFiles: [
+      "node_modules/widget-tester/mocks/gadget-mocks.js",
+      "node_modules/widget-tester/mocks/logger-mock.js",
+      "src/components/widget-common/dist/config.js",
+      "src/config/config.js",
+      "src/widget/image.js",
+      "test/unit/image-spec.js"
+    ]}
+  ));
+
+  gulp.task("test:unit", function(cb) {
+    runSequence("test:unit:settings", "test:unit:widget", cb);
+  });
+
   gulp.task("test", function(cb) {
-    runSequence("test:unit:settings", "test:e2e", "test:integration", cb);
+    runSequence("test:unit", "test:e2e", "test:integration", cb);
   });
 
   gulp.task("build", function (cb) {

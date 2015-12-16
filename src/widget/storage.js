@@ -52,7 +52,7 @@ RiseVision.Image.Storage = function (params) {
       var fileUrl = (e.detail && e.detail.request && e.detail.request.url) ? e.detail.request.url : null,
         params = {
           "event": "error",
-          "event_details": "storage error",
+          "event_details": "rise storage error",
           "file_url": fileUrl
         };
 
@@ -63,7 +63,7 @@ RiseVision.Image.Storage = function (params) {
       var fileUrl = (e.detail && e.detail.request && e.detail.request.url) ? e.detail.request.url : null,
         params = {
           "event": "error",
-          "event_details": "cache error",
+          "event_details": "rise cache error",
           "file_url": fileUrl
         };
 

@@ -42,7 +42,7 @@
         table = "image_events",
         params = {
           "event": "error",
-          "event_details": "storage error",
+          "event_details": "rise storage error",
           "file_url": "http://localhost:9494/?url=https%3A%2F%2Fstorage.googleapis.com%2Frisemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443%2FWidgets%2Fsimpson's.jpg",
           "file_format": "jpg",
           "company_id": '"companyId"',
@@ -57,10 +57,10 @@
         RiseVision.Common.Logger.log.restore();
       });
 
-      suite("storage error", function() {
+      suite("rise storage error", function() {
         var spyCall;
 
-        test("should log a storage error", function() {
+        test("should log a rise storage error", function() {
           spy = sinon.spy(RiseVision.Common.Logger, "log");
 
           storage.dispatchEvent(new CustomEvent("rise-storage-error", {
@@ -77,10 +77,10 @@
         });
       });
 
-      suite("cache error", function() {
+      suite("rise cache error", function() {
         var spyCall;
 
-        test("should log a cache error", function() {
+        test("should log a rise cache error", function() {
           spy = sinon.spy(RiseVision.Common.Logger, "log");
 
           storage.dispatchEvent(new CustomEvent("rise-cache-error", {
@@ -92,7 +92,7 @@
             "bubbles": true
           }));
 
-          params.event_details = "cache error";
+          params.event_details = "rise cache error";
 
           assert(spy.calledOnce);
           assert(spy.calledWith(table, params));

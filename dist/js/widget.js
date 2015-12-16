@@ -459,7 +459,6 @@ RiseVision.Common.Logger = (function(utils) {
     "log": log
   };
 })(RiseVision.Common.LoggerUtils);
-
 /* global config */
 var RiseVision = RiseVision || {};
 RiseVision.Image = RiseVision.Image || {};
@@ -514,7 +513,7 @@ RiseVision.Image.Storage = function (params) {
       var fileUrl = (e.detail && e.detail.request && e.detail.request.url) ? e.detail.request.url : null,
         params = {
           "event": "error",
-          "event_details": "storage error",
+          "event_details": "rise storage error",
           "file_url": fileUrl
         };
 
@@ -525,7 +524,7 @@ RiseVision.Image.Storage = function (params) {
       var fileUrl = (e.detail && e.detail.request && e.detail.request.url) ? e.detail.request.url : null,
         params = {
           "event": "error",
-          "event_details": "cache error",
+          "event_details": "rise cache error",
           "file_url": fileUrl
         };
 

@@ -53,6 +53,7 @@ RiseVision.Image.Storage = function (params) {
         params = {
           "event": "error",
           "event_details": "rise storage error",
+          "error_details": "The request failed with status code: " + e.detail.error.currentTarget.status,
           "file_url": fileUrl
         };
 
@@ -64,6 +65,7 @@ RiseVision.Image.Storage = function (params) {
         params = {
           "event": "error",
           "event_details": "rise cache error",
+          "error_details": "The request failed with status code: " + e.detail.error.currentTarget.status,
           "file_url": fileUrl
         };
 

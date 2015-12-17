@@ -262,16 +262,10 @@ RiseVision.Common.LoggerUtils = (function(gadgets) {
 
     // event is required.
     if (params.event) {
-      json = {};
-      json.event = params.event;
+      json = params;
 
-      if (params.event_details) {
-        json.event_details = params.event_details;
-      }
-
-      if (params.file_url) {
-        json.file_url = params.file_url;
-        json.file_format = getFileFormat(params.file_url);
+      if (json.file_url) {
+        json.file_format = getFileFormat(json.file_url);
       }
 
       getIds(function(companyId, displayId) {
@@ -514,6 +508,7 @@ RiseVision.Image.Storage = function (params) {
         params = {
           "event": "error",
           "event_details": "rise storage error",
+          "error_details": "The request failed with status code: " + e.detail.error.currentTarget.status,
           "file_url": fileUrl
         };
 
@@ -525,6 +520,7 @@ RiseVision.Image.Storage = function (params) {
         params = {
           "event": "error",
           "event_details": "rise cache error",
+          "error_details": "The request failed with status code: " + e.detail.error.currentTarget.status,
           "file_url": fileUrl
         };
 

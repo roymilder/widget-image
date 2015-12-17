@@ -43,6 +43,7 @@
         params = {
           "event": "error",
           "event_details": "rise storage error",
+          "error_details": "The request failed with status code: 404",
           "file_url": "http://localhost:9494/?url=https%3A%2F%2Fstorage.googleapis.com%2Frisemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443%2FWidgets%2Fsimpson's.jpg",
           "file_format": "jpg",
           "company_id": '"companyId"',
@@ -67,6 +68,11 @@
             "detail": {
               "request": {
                 "url": "http://localhost:9494/?url=https%3A%2F%2Fstorage.googleapis.com%2Frisemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443%2FWidgets%2Fsimpson's.jpg"
+              },
+              "error": {
+                "currentTarget": {
+                  "status": 404
+                }
               }
             },
             "bubbles": true
@@ -87,6 +93,11 @@
             "detail": {
               "request": {
                 "url": "http://localhost:9494/?url=https%3A%2F%2Fstorage.googleapis.com%2Frisemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443%2FWidgets%2Fsimpson's.jpg"
+              },
+              "error": {
+                "currentTarget": {
+                  "status": 404
+                }
               }
             },
             "bubbles": true
@@ -112,6 +123,7 @@
 
           params.event_details = "storage file not found";
           params.file_url = "Widgets/simpson's.jpg";
+          delete params.error_details;
 
           assert(spy.calledOnce);
           assert(spy.calledWith(table, params));

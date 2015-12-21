@@ -13,7 +13,14 @@
   };
 
   window.addEventListener("WebComponentsReady", function() {
-    gadgets.rpc.register("rsparam_set_" + id, RiseVision.Image.getAdditionalParams);
-    gadgets.rpc.call("", "rsparam_get", null, id, ["additionalParams"]);
+    if (id && id !== "") {
+      gadgets.rpc.register("rscmd_play_" + id, play);
+      gadgets.rpc.register("rsparam_set_" + id, RiseVision.Image.getAdditionalParams);
+      gadgets.rpc.call("", "rsparam_get", null, id, ["additionalParams"]);
+    }
   });
+
+  function play() {
+    RiseVision.Image.play();
+  }
 })(window, document, gadgets);

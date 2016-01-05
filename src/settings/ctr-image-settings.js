@@ -14,11 +14,11 @@ angular.module("risevision.widget.image.settings")
         }
       });
 
-      $scope.$watch("settings.additionalParams.resume", function (resume) {
-        if (typeof resume === "undefined") {
-          $scope.settings.additionalParams.resume = true;
-        }
-      });
+      // $scope.$watch("settings.additionalParams.resume", function (resume) {
+      //   if (typeof resume === "undefined") {
+      //     $scope.settings.additionalParams.resume = true;
+      //   }
+      // });
 
       // Legacy URL setting
       $scope.$watch("settings.additionalParams.url", function (url) {
@@ -54,7 +54,7 @@ angular.module("risevision.widget.image.settings")
     "additionalParams": {
       "selector": {},
       "storage": {},
-      "resume": true,     // folder
+      // "resume": true,     // folder
       "scaleToFit": true,
       "position": "top-left",
       "duration": 10,     // folder

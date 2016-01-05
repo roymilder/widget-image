@@ -206,6 +206,9 @@ RiseVision.Image = (function (gadgets) {
     _params = _.clone(additionalParams);
     _mode = modeType;
 
+    _params.width = _prefs.getInt("rsW");
+    _params.height = _prefs.getInt("rsH");
+
     document.getElementById("container").style.height = _prefs.getInt("rsH") + "px";
     init();
   }

@@ -16,11 +16,7 @@
       "position": "middle-center",
       "duration": 1,
       "pause": 10,
-      "autoHide": false,
-      "background": {
-        "color": "rgb(217, 234, 211)"
-      }
-
+      "autoHide": false
     }
   };
 })(window);

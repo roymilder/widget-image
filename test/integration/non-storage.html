@@ -70,10 +70,6 @@
         assert.isNotNull(document.querySelector(".scale-to-fit"));
       });
 
-      test("should set background color", function() {
-        assert.equal(document.body.style.background, "rgb(217, 234, 211)");
-      });
-
       test("should set background image", function() {
         assert.equal(document.getElementById("image").style.backgroundImage,
           'url(\"http://s3.amazonaws.com/rise-common/images/logo-small.png\")');

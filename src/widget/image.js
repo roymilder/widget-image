@@ -94,7 +94,10 @@ RiseVision.Image = (function (gadgets) {
     // show wait message
     _message.show("Please wait while your image is downloaded.");
 
-    document.body.style.background = _params.background.color;
+    // legacy
+    if (_params.background && Object.keys(_params.background).length > 0) {
+      document.body.style.background = _params.background.color;
+    }
 
     if (_mode === "file") {
       // create the image <div> within the container <div>

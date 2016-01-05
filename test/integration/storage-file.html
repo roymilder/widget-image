@@ -96,10 +96,6 @@
         assert.isNotNull(document.querySelector(".scale-to-fit"));
       });
 
-      test("should set background color", function() {
-        assert.equal(document.body.style.background, "rgb(217, 234, 211)");
-      });
-
       test("should set background image", function() {
         assert.equal(document.getElementById("image").style.backgroundImage,
           'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fsimpson\'s.jpg?alt=media\")');

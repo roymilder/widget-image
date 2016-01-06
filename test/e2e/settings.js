@@ -53,8 +53,8 @@
       expect(element(by.model("settings.additionalParams.scaleToFit")).isSelected()).to.eventually.be.true;
     });
 
-    it("Alignment should be top-left", function () {
-      expect(element(by.name("position")).getAttribute("value")).to.eventually.equal("top-left");
+    it("Alignment should be middle-center", function () {
+      expect(element(by.name("position")).getAttribute("value")).to.eventually.equal("middle-center");
     });
 
     it("Duration should be 10", function () {
@@ -136,7 +136,7 @@
           "storage": {},
           // "resume": true,
           "scaleToFit": true,
-          "position": "top-left",
+          "position": "middle-center",
           "duration": 10,
           "pause": 10,
           "autoHide": false,

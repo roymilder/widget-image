@@ -9054,7 +9054,7 @@ angular.module("risevision.widget.image.settings")
       "storage": {},
       // "resume": true,     // folder
       "scaleToFit": true,
-      "position": "top-left",
+      "position": "middle-center",
       "duration": 10,     // folder
       "pause": 10,        // folder
       "autoHide": false,  // folder

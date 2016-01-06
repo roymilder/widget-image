@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Image Widget</title>
+
+  <link rel="stylesheet" type="text/css" href="../../src/widget/css/styles.css">
+  <link rel="stylesheet" href="../../src/components/widget-common/dist/css/message.css">
+
+  <script src="../../src/components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/components/web-component-tester/browser.js"></script>
+
+</head>
+<body>
+
+<div id="container"></div>
+
+<div id="messageContainer"></div>
+
+<script src="../data/non-storage.js"></script>
+
+<script src="../../node_modules/widget-tester/mocks/gadget-mocks.js"></script>
+<script src="../../node_modules/widget-tester/mocks/logger-mock.js"></script>
+
+<script src="../../src/components/widget-common/dist/config.js"></script>
+<script src="../../src/components/widget-common/dist/rise-cache.js"></script>
+<script src="../../src/config/test.js"></script>
+<script src="../../src/widget/image.js"></script>
+<script src="../../src/widget/non-storage.js"></script>
+<script src="../../src/components/widget-common/dist/message.js"></script>
+<script src="../../src/widget/main.js"></script>
+
+<script>
+
+  suite("non-storage", function() {
+
+    var clock, paramsStub, xhr, requests;
+
+    paramsStub = sinon.stub(RiseVision.Image, "setAdditionalParams", function (names, values) {
+      requests = [];
+      xhr = sinon.useFakeXMLHttpRequest();
+
+      xhr.onCreate = function (xhr) {
+        requests.push(xhr);
+      };
+
+      // need to set the fake timer clock before any of the code within setAdditionalParams is executed
+      clock = sinon.useFakeTimers();
+      // restore the function
+      paramsStub.restore();
+      // call it again with the params
+      RiseVision.Image.setAdditionalParams(names, values);
+
+      requests[0].respond(0); // Ping request
+      requests[1].respond(200);  // HEAD request
+      xhr.restore();
+    });
+
+    teardown(function () {
+      clock.restore();
+    });
+
+    suite("file added", function () {
+      test("should align image at top left", function() {
+        assert.isNotNull(document.querySelector(".middle-center"));
+      });
+
+      test("should scale image to fit", function() {
+        assert.isNotNull(document.querySelector(".scale-to-fit"));
+      });
+
+      test("should set background image", function() {
+        assert.equal(document.getElementById("image").style.backgroundImage,
+          'url(\"http://s3.amazonaws.com/rise-common/images/logo-small.png\")');
+      });
+    });
+
+    suite("file refresh", function() {
+      var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+
+      suiteSetup(function() {
+        xhr = sinon.useFakeXMLHttpRequest();
+
+        xhr.onCreate = function (xhr) {
+          requests.push(xhr);
+        };
+      });
+
+      suiteTeardown(function() {
+        xhr.restore();
+        RiseVision.Image.onFileRefresh.restore();
+      });
+
+      setup(function() {
+        requests = [];
+      });
+
+      test("onFileRefresh() called when file changed", function() {
+        // advance clock the refresh interval duration amount
+        clock.tick(900000);
+        requests[0].respond(200);
+
+        assert(onRefreshSpy.calledOnce, "onFileRefresh called once");
+        assert.include(onRefreshSpy.args[0][0], "http://s3.amazonaws.com/rise-common/images/logo-small.png?cb=",
+          "onFileRefresh called with correct url");
+      });
+
+    });
+
+  });
+</script>
+</body>
+</html>

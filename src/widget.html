@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Image Widget</title>
 
+  <link rel="stylesheet" href="//s3.amazonaws.com/rise-common/scripts/slider-revolution/css/style.css">
+  <link rel="stylesheet" href="//s3.amazonaws.com/rise-common/scripts/slider-revolution/css/settings.css">
+
   <!-- build:css css/widget.min.css -->
   <link rel="stylesheet" href="widget/css/styles.css">
   <link rel="stylesheet" href="components/widget-common/dist/css/message.css">
@@ -17,11 +20,13 @@
 <body>
   <rise-storage refresh="5"></rise-storage>
 
-  <div id="container">
-    <div id="image"></div>
-  </div>
+  <div id="container"></div>
 
   <div id="messageContainer"></div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script src="//s3.amazonaws.com/rise-common/scripts/slider-revolution/js/jquery.themepunch.tools.min.js"></script>
+  <script src="//s3.amazonaws.com/rise-common/scripts/slider-revolution/js/jquery.themepunch.revolution.min.js"></script>
 
   <!-- build:e2eMockData -->
   <!-- endbuild -->
@@ -34,12 +39,17 @@
   <!-- endbuild -->
 
   <!-- build:js js/widget.min.js -->
+  <script src="components/widget-common/dist/config.js"></script>
+  <script src="components/widget-common/dist/logger.js"></script>
+  <script src="components/widget-common/dist/rise-cache.js"></script>
+  <script src="components/widget-common/dist/common.js"></script>
   <script src="config/config.js"></script>
   <script src="widget/image.js"></script>
-  <script src="components/widget-common/dist/config.js"></script>
+  <script src="widget/slider.js"></script>
+  <script src="widget/storage-file.js"></script>
+  <script src="widget/storage-folder.js"></script>
+  <script src="widget/non-storage.js"></script>
   <script src="components/widget-common/dist/message.js"></script>
-  <script src="components/widget-common/dist/logger.js"></script>
-  <script src="widget/storage.js"></script>
   <script src="widget/main.js"></script>
   <script src="widget/analytics.js"></script>
   <!-- endbuild -->

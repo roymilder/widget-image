@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Image Widget</title>
+
+  <link rel="stylesheet" type="text/css" href="../../src/widget/css/styles.css">
+  <link rel="stylesheet" href="../../src/components/widget-common/dist/css/message.css">
+
+  <script src="../../src/components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/components/web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../../src/components/rise-storage/rise-storage.html">
+</head>
+<body>
+
+<rise-storage refresh="5"></rise-storage>
+
+<div id="container"></div>
+
+<div id="messageContainer"></div>
+
+<script src="../data/storage-file.js"></script>
+
+<script src="../../node_modules/widget-tester/mocks/gadget-mocks.js"></script>
+<script src="../../node_modules/widget-tester/mocks/logger-mock.js"></script>
+
+<script src="../../src/components/widget-common/dist/config.js"></script>
+<script src="../../src/components/widget-common/dist/rise-cache.js"></script>
+<script src="../../src/config/test.js"></script>
+<script src="../../src/widget/image.js"></script>
+<script src="../../src/widget/storage-file.js"></script>
+<script src="../../src/components/widget-common/dist/message.js"></script>
+<script src="../../src/widget/main.js"></script>
+
+<script>
+  suite("storage - file", function() {
+
+    var storage = document.querySelector("rise-storage"),
+      responded = false,
+      listener;
+
+    sinon.stub(storage.$.ping, "generateRequest", function () {
+      storage._handlePingError();
+    });
+
+    suite("file added", function () {
+      var check = function(done) {
+          if (responded) {
+            done();
+          }
+          else {
+            setTimeout(function() {
+              check(done)
+            }, 1000);
+          }
+        };
+
+      suiteSetup(function() {
+        listener = function(response) {
+          responded = true;
+          storage.removeEventListener("rise-storage-response", listener);
+        };
+
+        storage.addEventListener("rise-storage-response", listener);
+
+      });
+
+      // Don't run the tests until rise-storage-response has fired.
+      setup(function (done) {
+        check(done);
+      });
+
+      test("should set folder attribute of storage component", function() {
+        assert.equal(storage.folder, "Widgets");
+      });
+
+      test("should set filename attribute of storage component", function() {
+        assert.equal(storage.filename, "simpson's.jpg");
+      });
+
+      test("should set companyid attribute of storage component", function() {
+        assert.equal(storage.companyid, "b428b4e8-c8b9-41d5-8a10-b4193c789443");
+      });
+
+      test("should set env attribute of storage component", function() {
+        assert.equal(storage.env, config.STORAGE_ENV);
+      });
+
+      test("should align image at top left", function() {
+        assert.isNotNull(document.querySelector(".top-left"));
+      });
+
+      test("should scale image to fit", function() {
+        assert.isNotNull(document.querySelector(".scale-to-fit"));
+      });
+
+      test("should set background image", function() {
+        assert.equal(document.getElementById("image").style.backgroundImage,
+          'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fsimpson\'s.jpg?alt=media\")');
+      });
+    });
+
+    suite("file changed", function() {
+
+      test("should call onFileRefresh() and set background image", function() {
+        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+
+        storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+          "detail": {
+            "changed": true,
+            "name": "Widgets/simpson's.jpg",
+            "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson's.jpg"
+          },
+          "bubbles": true
+        }));
+
+        assert(onRefreshSpy.calledOnce);
+
+        assert.equal(document.getElementById("image").style.backgroundImage,
+          'url(\"https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson\'s.jpg\")');
+
+        RiseVision.Image.onFileRefresh.restore();
+      });
+
+    });
+
+    suite("file name/url changed (no quotes)", function() {
+
+      test("should call onFileRefresh() and set background image", function() {
+        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+
+        storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+          "detail": {
+            "changed": true,
+            "name": "Widgets/simpsons.jpg",
+            "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg"
+          },
+          "bubbles": true
+        }));
+
+        assert(onRefreshSpy.calledOnce);
+
+        assert.equal(document.getElementById("image").style.backgroundImage,
+          'url("https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg")');
+
+        RiseVision.Image.onFileRefresh.restore();
+      });
+    });
+
+    suite("file unchanged", function() {
+
+      test("should not call onFileRefresh() when file has not changed", function() {
+        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+
+        storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+          "detail": {
+            "changed": false,
+            "name": "Widgets/simpsons.jpg",
+            "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg"
+          },
+          "bubbles": true
+        }));
+
+        assert(onRefreshSpy.notCalled);
+
+        RiseVision.Image.onFileRefresh.restore();
+      });
+
+    });
+
+    suite("storage errors", function() {
+      var params = { "event": ""},
+        onShowErrorStub, onLogEventStub;
+
+      setup(function() {
+        onShowErrorStub = sinon.stub(RiseVision.Image, "showError", function(){});
+        onLogEventStub = sinon.stub(RiseVision.Image, "logEvent", function(){});
+      });
+
+      teardown(function() {
+        delete params.url;
+        delete params.event_details;
+
+        RiseVision.Image.showError.restore();
+        RiseVision.Image.logEvent.restore();
+      });
+
+      test("should handle when 'no file' error occurs", function() {
+        var filePath = window.gadget.settings.additionalParams.storage.folder + "/" + window.gadget.settings.additionalParams.storage.fileName;
+        params.event = "error";
+        params.event_details = "storage file not found";
+        params.file_url = filePath;
+
+        storage.dispatchEvent(new CustomEvent("rise-storage-no-file", {
+          "detail": filePath,
+          "bubbles": true
+        }));
+
+        assert(onLogEventStub.calledOnce, "logEvent() called once");
+        assert(onLogEventStub.calledWith(params, true), "logEvent() called with correct params");
+        assert(onShowErrorStub.calledOnce, "showError() called once");
+        assert(onShowErrorStub.calledWith("The selected image does not exist or has been moved to Trash."),
+          "showError() called with correct message");
+      });
+
+      test("should handle when 'file throttled' error occurs", function() {
+        params.event = "error";
+        params.event_details = "storage file throttled";
+        params.file_url = window.gadget.settings.additionalParams.url;
+
+        storage.dispatchEvent(new CustomEvent("rise-storage-file-throttled", {
+          "detail": window.gadget.settings.additionalParams.url,
+          "bubbles": true
+        }));
+
+        assert(onLogEventStub.calledOnce, "logEvent() called once");
+        assert(onLogEventStub.calledWith(params, true), "logEvent() called with correct params");
+        assert(onShowErrorStub.calledOnce, "showError() called once");
+        assert(onShowErrorStub.calledWith("The selected image is temporarily unavailable."),
+          "showError() called with correct message");
+      });
+
+      test("should handle when a rise storage error occurs", function() {
+        params.event = "error";
+        params.event_details = "rise storage error";
+        params.error_details = "The request failed with status code: 0";
+        params.file_url = null;
+
+        storage.dispatchEvent(new CustomEvent("rise-storage-error", {
+          "detail": {
+            "error": {
+              "currentTarget": {
+                "status": 0
+              }
+            }},
+          "bubbles": true
+        }));
+
+        assert(onLogEventStub.calledOnce, "logEvent() called once");
+        assert(onLogEventStub.calledWith(params, true), "logEvent() called with correct params");
+        assert(onShowErrorStub.calledOnce, "showError() called once");
+        assert(onShowErrorStub.calledWith("Sorry, there was a problem communicating with Rise Storage."),
+          "showError() called with correct message");
+      });
+
+      test("should handle when a rise cache error occurs", function() {
+        params.event = "error";
+        params.event_details = "rise cache error";
+        params.error_details = "The request failed with status code: 0";
+        params.file_url = null;
+
+        storage.dispatchEvent(new CustomEvent("rise-cache-error", {
+          "detail": {
+            "error": {
+              "currentTarget": {
+                "status": 0
+              }
+            }},
+          "bubbles": true
+        }));
+
+        assert(onLogEventStub.calledOnce, "logEvent() called once");
+        assert(onLogEventStub.calledWith(params, true), "logEvent() called with correct params");
+        assert(onShowErrorStub.calledOnce, "showError() called once");
+        assert(onShowErrorStub.calledWith("There was a problem retrieving the file from Rise Cache."),
+          "showError() called with correct message");
+      });
+
+    });
+
+    suite("Network Recovery", function () {
+
+      test("should call onFileRefresh() if in state of storage error and network recovered", function() {
+        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+
+        // force a storage error in the scenario of a network failure
+        storage.dispatchEvent(new CustomEvent("rise-storage-error", {
+          "detail": {
+            "error": {
+              "currentTarget": {
+                "status": 0
+              }
+            }},
+          "bubbles": true
+        }));
+
+        // force a response in the scenario of the network recovered
+        storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+          "detail": {
+            "changed": false,
+            "name": "Widgets/simpsons.jpg",
+            "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg"
+          },
+          "bubbles": true
+        }));
+
+        assert(onRefreshSpy.calledOnce);
+
+        RiseVision.Image.onFileRefresh.restore();
+      });
+    });
+
+  });
+</script>
+</body>
+</html>

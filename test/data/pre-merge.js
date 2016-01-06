@@ -5,11 +5,11 @@
   window.gadget.settings = {
     "params": {},
     "additionalParams": {
-      "url": "http://s3.amazonaws.com/rise-common/images/logo-small.png",
+      "url": "http://s3.amazonaws.com/rise-common/images/logo-small.png", // legacy
       "storage": {},
       "scaleToFit": true,
       "position": "middle-center",
-      "background": {
+      "background": { // legacy
         "color": "rgb(204, 204, 204)"
       }
     }

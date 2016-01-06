@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Image Widget</title>
+
+  <link rel="stylesheet" type="text/css" href="../../src/widget/css/styles.css">
+  <link rel="stylesheet" href="../../src/components/widget-common/dist/css/message.css">
+
+  <script src="../../src/components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/components/web-component-tester/browser.js"></script>
+
+</head>
+<body>
+
+<div id="container"></div>
+
+<div id="messageContainer"></div>
+
+<script src="../data/non-storage.js"></script>
+
+<script src="../../node_modules/widget-tester/mocks/gadget-mocks.js"></script>
+<script src="../../node_modules/widget-tester/mocks/logger-mock.js"></script>
+
+<script src="../../src/components/widget-common/dist/config.js"></script>
+<script src="../../src/components/widget-common/dist/rise-cache.js"></script>
+<script src="../../src/config/test.js"></script>
+<script src="../../src/widget/image.js"></script>
+<script src="../../src/widget/non-storage.js"></script>
+<script src="../../src/components/widget-common/dist/message.js"></script>
+<script src="../../src/widget/main.js"></script>
+
+<script>
+  suite("logging", function() {
+    var spy, clock,
+      table = "image_events",
+      params = {
+        "event": "play",
+        "file_url": "http://s3.amazonaws.com/rise-common/images/logo-small.png",
+        "file_format": "png",
+        "company_id": '"companyId"',
+        "display_id": '"displayId"'
+      },
+      paramsStub, configLogCall;
+
+    paramsStub = sinon.stub(RiseVision.Image, "setAdditionalParams", function (params, mode) {
+      // need to enforce the fake timer clock before any of the code within setAdditionalParams is executed
+      clock = sinon.useFakeTimers();
+
+      // spy on log call
+      spy = sinon.spy(RiseVision.Common.LoggerUtils, "logEvent");
+      // restore the function
+      paramsStub.restore();
+      // call it again with the params
+      RiseVision.Image.setAdditionalParams(params, mode);
+      // capture the configuration log args
+      configLogCall = RiseVision.Common.LoggerUtils.logEvent.getCall(0);
+    });
+
+    setup(function() {
+      RiseVision.Image.onFileInit(params.file_url);
+    });
+
+    teardown(function() {
+      clock.restore();
+      RiseVision.Common.LoggerUtils.logEvent.restore();
+    });
+
+    suite("configuration", function () {
+
+      test("should log the configuration event", function () {
+        assert.equal(configLogCall.args[0], table);
+        assert.deepEqual(configLogCall.args[1], {
+          "event": "configuration",
+          "event_details": "custom",
+          "company_id": params.company_id,
+          "display_id": params.display_id
+        });
+
+      });
+    });
+
+    suite("play", function() {
+
+      test("should log the play event", function() {
+        spy = sinon.spy(RiseVision.Common.LoggerUtils, "logEvent");
+
+        RiseVision.Image.play();
+
+        assert(spy.calledOnce);
+        assert(spy.calledWith(table, params));
+      });
+
+    });
+
+    suite("non-storage error", function() {
+      var nonStorage = new RiseVision.Image.NonStorage({ "url": params.file_url }),
+        riseCache = RiseVision.Common.RiseCache,
+        xhr, requests;
+
+      suiteSetup(function() {
+        xhr = sinon.useFakeXMLHttpRequest();
+
+        xhr.onCreate = function (xhr) {
+          requests.push(xhr);
+        };
+      });
+
+      suiteTeardown(function() {
+        xhr.restore();
+      });
+
+      setup(function() {
+        requests = [];
+
+        riseCache.ping(function(){});
+        requests[0].respond(200);
+      });
+
+      test("should log a non-storage error", function() {
+        spy = sinon.spy(RiseVision.Common.LoggerUtils, "logEvent");
+
+        params.event = "error";
+        params.event_details = "non-storage error";
+        params.error_details = "The request failed with status code: 0";
+        params.file_url = "http://localhost:9494/?url=http%3A%2F%2Fs3.amazonaws.com%2Frise-common%2Fimages%2Flogo-small.png";
+
+        nonStorage.init();
+        requests[1].respond(0); // HEAD request
+        requests[2].respond(0); // GET request
+
+        assert(spy.calledOnce);
+        assert(spy.calledWith(table, params));
+      });
+    });
+  });
+</script>
+</body>
+</html>

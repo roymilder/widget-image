@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Image Widget</title>
+
+  <link rel="stylesheet" type="text/css" href="../../src/widget/css/styles.css">
+  <link rel="stylesheet" href="../../src/components/widget-common/dist/css/message.css">
+
+  <script src="../../src/components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/components/web-component-tester/browser.js"></script>
+
+</head>
+<body>
+
+<div id="container"></div>
+
+<div id="messageContainer"></div>
+
+<script src="../data/non-storage.js"></script>
+
+<script src="../../node_modules/widget-tester/mocks/gadget-mocks.js"></script>
+<script src="../../node_modules/widget-tester/mocks/logger-mock.js"></script>
+
+<script src="../../src/components/widget-common/dist/config.js"></script>
+<script src="../../src/components/widget-common/dist/rise-cache.js"></script>
+<script src="../../src/config/test.js"></script>
+<script src="../../src/widget/image.js"></script>
+<script src="../../src/widget/non-storage.js"></script>
+<script src="../../src/components/widget-common/dist/message.js"></script>
+<script src="../../src/widget/main.js"></script>
+
+<script>
+  suite("messaging", function() {
+    suite("downloading message", function() {
+      sinon.stub(RiseVision.Image, "onFileInit", function(){});
+
+      test("should show waiting message", function() {
+        assert.equal(document.querySelector(".message").innerHTML, "Please wait while your image is downloaded.", "message is correct");
+      });
+
+      test("should not show message", function() {
+        RiseVision.Image.onFileInit.restore();
+        RiseVision.Image.onFileInit(window.gadget.settings.additionalParams.selector.url);
+
+        assert.isTrue((document.getElementById("container").style.visibility === "visible"), "image container is showing");
+        assert.isTrue((document.getElementById("messageContainer").style.display === "none"), "message container is hidden");
+      });
+    });
+
+    suite("non-storage error message", function() {
+      var nonStorage = new RiseVision.Image.NonStorage({ "url": "http://www.test.com/test.jpg" }),
+        riseCache = RiseVision.Common.RiseCache,
+        xhr, clock, requests;
+
+      suiteSetup(function() {
+        xhr = sinon.useFakeXMLHttpRequest();
+        clock = sinon.useFakeTimers();
+
+        xhr.onCreate = function (xhr) {
+          requests.push(xhr);
+        };
+      });
+
+      suiteTeardown(function() {
+        xhr.restore();
+      });
+
+      setup(function() {
+        requests = [];
+
+        riseCache.ping(function(){});
+        requests[0].respond(200);
+
+        nonStorage.init();
+        requests[1].respond(0); // HEAD request
+        requests[2].respond(0); // GET request
+      });
+
+      test("should show non-storage error message", function() {
+        assert.equal(document.querySelector(".message").innerHTML, "There was a problem retrieving the file from Rise Cache.", "message text");
+        assert.isTrue((document.getElementById("messageContainer").style.display === "block"), "message visibility");
+      });
+
+      test("should call play function 5 seconds after a non-storage error", function() {
+        var spy = sinon.spy(RiseVision.Image, "play");
+
+        clock.tick(4500);
+        assert(spy.notCalled);
+        clock.tick(500);
+        assert(spy.calledOnce);
+
+        clock.restore();
+        RiseVision.Image.play.restore();
+      });
+    });
+  });
+</script>
+</body>
+</html>

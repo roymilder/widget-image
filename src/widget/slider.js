@@ -14,7 +14,8 @@ RiseVision.Image.Slider = function (params) {
     isLastSlide = false,
     refreshSlider = false,
     isLoading = true,
-    isPaused = false,
+    isPlaying = false,
+    isInteracting = false,
     navTimeout = 3000;
 
   /*
@@ -96,14 +97,14 @@ RiseVision.Image.Slider = function (params) {
   }
 
   function onSlideChanged(data) {
-    if (isPaused) {
-      $api.revpause();
+    if (isInteracting) {
+      pause();
     }
     // Don't call "done" if user is interacting with the slideshow.
     else {
       if (isLastSlide) {
         isLastSlide = false;
-        $api.revpause();
+        pause();
         RiseVision.Image.onSliderComplete();
 
         if (refreshSlider) {
@@ -136,14 +137,16 @@ RiseVision.Image.Slider = function (params) {
 
   // User has interacted with the slideshow.
   function handleUserActivity() {
-    isPaused = true;
+    isInteracting = true;
     clearTimeout(slideTimer);
 
     // Move to next slide and resume the slideshow after a delay.
     slideTimer = setTimeout(function() {
-      isPaused = false;
       $api.revnext();
       $api.revresume();
+
+      isInteracting = false;
+      isPlaying = true;
     }, params.pause * 1000);
 
     hideNav();
@@ -167,7 +170,7 @@ RiseVision.Image.Slider = function (params) {
   function destroy() {
     if ($api) {
       isLastSlide = false;
-      $api.revpause();
+      pause();
       destroySlider();
     }
   }
@@ -207,7 +210,7 @@ RiseVision.Image.Slider = function (params) {
 
     $api.on("revolution.slide.onloaded", function() {
       // Pause slideshow since it will autoplay and this is not configurable.
-      $api.revpause();
+      pause();
       isLoading = false;
       RiseVision.Image.onSliderReady();
     });
@@ -240,14 +243,18 @@ RiseVision.Image.Slider = function (params) {
       if (params.hasOwnProperty("resume") && !params.resume) {
         $api.revshowslide(0);
       }
-    }
 
-    $api.revresume();
+      if (!isPlaying) {
+        $api.revresume();
+        isPlaying = true;
+      }
+    }
   }
 
   function pause() {
-    if ($api) {
+    if ($api && isPlaying) {
       $api.revpause();
+      isPlaying = false;
     }
   }
 

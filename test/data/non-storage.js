@@ -12,6 +12,7 @@
         "url": "http://s3.amazonaws.com/rise-common/images/logo-small.png"
       },
       "storage": {},
+      "resume": true,
       "scaleToFit": true,
       "position": "middle-center",
       "duration": 1,

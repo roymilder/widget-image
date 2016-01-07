@@ -1054,8 +1054,13 @@ RiseVision.Image.Slider = function (params) {
 
   function play() {
     if ($api) {
-      $api.revresume();
+      // Reset slideshow to first slide.
+      if (params.hasOwnProperty("resume") && !params.resume) {
+        $api.revshowslide(0);
+      }
     }
+
+    $api.revresume();
   }
 
   function pause() {

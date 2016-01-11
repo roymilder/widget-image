@@ -113,12 +113,12 @@ describe("Unit Tests - Settings Controller", function () {
     expect(scope.settings.additionalParams.storage).to.deep.equal({});
   });
 
-  // it("should check resume by default if it has not been set", function() {
-  //   scope.settings.additionalParams.resume = undefined;
-  //   scope.$digest();
+  it("should check resume by default if it has not been set", function() {
+    scope.settings.additionalParams.resume = undefined;
+    scope.$digest();
 
-  //   expect(scope.settings.additionalParams.resume).to.be.true;
-  // });
+    expect(scope.settings.additionalParams.resume).to.be.true;
+  });
 
   it("Should set isFolder to true when folder is selected", function () {
     scope.$digest();

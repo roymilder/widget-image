@@ -16,6 +16,7 @@
         "folder": "images/",
         "fileName": ""
       },
+      "resume": true,
       "scaleToFit": true,
       "position": "top-left",
       "duration": 1,

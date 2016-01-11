@@ -45,9 +45,9 @@
     });
 
     // Defaults
-    // it("Resume Playing from Last Position should be checked", function () {
-    //   expect(element(by.model("settings.additionalParams.resume")).isSelected()).to.eventually.be.true;
-    // });
+    it("Resume Playing from Last Position should be checked", function () {
+      expect(element(by.model("settings.additionalParams.resume")).isSelected()).to.eventually.be.true;
+    });
 
     it("Scale to Fit should be checked", function () {
       expect(element(by.model("settings.additionalParams.scaleToFit")).isSelected()).to.eventually.be.true;
@@ -70,9 +70,9 @@
     });
 
     // Visibility
-    // it("Should hide Resume Playing from Last Position", function () {
-    //   expect(element(by.model("settings.additionalParams.resume")).isDisplayed()).to.eventually.be.false;
-    // });
+    it("Should hide Resume Playing from Last Position", function () {
+      expect(element(by.model("settings.additionalParams.resume")).isDisplayed()).to.eventually.be.false;
+    });
 
     it("Should hide Duration", function () {
       expect(element(by.model("settings.additionalParams.duration")).isDisplayed()).to.eventually.be.false;
@@ -134,7 +134,7 @@
             "url": validImageUrl
           },
           "storage": {},
-          // "resume": true,
+          "resume": true,
           "scaleToFit": true,
           "position": "middle-center",
           "duration": 10,

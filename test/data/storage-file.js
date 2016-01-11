@@ -16,6 +16,7 @@
         "fileName": "simpson's.jpg",
         "companyId": "b428b4e8-c8b9-41d5-8a10-b4193c789443"
       },
+      "resume": true,
       "scaleToFit": true,
       "position": "top-left",
       "duration": 1,

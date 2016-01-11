@@ -7,6 +7,7 @@
   var del = require("del");
   var factory = require("widget-tester").gulpTaskFactory;
   var gulp = require("gulp");
+  var gulpif = require("gulp-if");
   var gutil = require("gulp-util");
   var htmlreplace = require("gulp-html-replace");
   var jshint = require("gulp-jshint");
@@ -18,6 +19,7 @@
   var uglify = require("gulp-uglify");
   var usemin = require("gulp-usemin");
   var wct = require("web-component-tester").gulp.init(gulp);
+  var env = process.env.NODE_ENV || "prod";
 
   var appJSFiles = [
       "src/**/*.js",
@@ -33,10 +35,11 @@
   });
 
   gulp.task("config", function() {
-    var env = process.env.NODE_ENV || "prod";
+    var configFile = (env === "dev" ? "dev.js" : "prod.js");
+
     gutil.log("Environment is", env);
 
-    return gulp.src(["./src/config/" + env + ".js"])
+    return gulp.src(["./src/config/" + configFile])
       .pipe(rename("config.js"))
       .pipe(gulp.dest("./src/config"));
   });
@@ -55,11 +58,21 @@
   });
 
   gulp.task("source", ["lint"], function () {
+    var isProd = (env === "prod");
+
     return gulp.src(htmlFiles)
-      .pipe(usemin({
-        css: [sourcemaps.init(), minifyCSS(), sourcemaps.write()],
-        js: [sourcemaps.init(), uglify(), sourcemaps.write()]
-      }))
+      .pipe(gulpif(isProd,
+        // Minify for production.
+        usemin({
+          css: [sourcemaps.init(), minifyCSS(), sourcemaps.write()],
+          js: [sourcemaps.init(), uglify(), sourcemaps.write()]
+        }),
+        // Don't minify for staging.
+        usemin({
+          css: [sourcemaps.init(), sourcemaps.write()],
+          js: [sourcemaps.init(), sourcemaps.write()]
+        })
+      ))
       .pipe(gulp.dest("dist/"));
   });
 

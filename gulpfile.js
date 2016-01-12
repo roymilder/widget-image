@@ -68,10 +68,7 @@
           js: [sourcemaps.init(), uglify(), sourcemaps.write()]
         }),
         // Don't minify for staging.
-        usemin({
-          css: [sourcemaps.init(), sourcemaps.write()],
-          js: [sourcemaps.init(), sourcemaps.write()]
-        })
+        usemin({})
       ))
       .pipe(gulp.dest("dist/"));
   });

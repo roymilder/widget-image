@@ -54,7 +54,7 @@
 
     suite("waiting", function() {
       test("should show waiting message", function() {
-        assert.equal(document.querySelector(".message").innerHTML, "Please wait while your image is downloaded.", "message is correct");
+        assert.equal(document.querySelector(".message").innerHTML, "Please wait while your image is downloaded.");
       });
     });
 
@@ -66,8 +66,8 @@
         }));
       });
 
-      test("should show the no video message", function() {
-        assert.equal(document.querySelector(".message").innerHTML, "The selected folder does not contain any images.", "message is correct");
+      test("should show the no image message", function() {
+        assert.equal(document.querySelector(".message").innerHTML, "The selected folder does not contain any images.");
       });
     });
 
@@ -80,7 +80,20 @@
       });
 
       test("should show no folder message", function() {
-        assert.equal(document.querySelector(".message").innerHTML, "The selected folder does not exist.", "message is correct");
+        assert.equal(document.querySelector(".message").innerHTML, "The selected folder does not exist.");
+      });
+    });
+
+    suite("invalid folder format", function () {
+      suiteSetup(function() {
+        storage.dispatchEvent(new CustomEvent("rise-storage-folder-invalid", {
+          "detail": null,
+          "bubbles": true
+        }));
+      });
+
+      test("should show format(s) invalid message", function() {
+        assert.equal(document.querySelector(".message").innerHTML, "The selected folder does not contain any supported image formats.");
       });
     });
 

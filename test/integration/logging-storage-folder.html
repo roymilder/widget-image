@@ -291,7 +291,8 @@
           "bubbles": true
         }));
 
-        params.event = "storage folder format(s) invalid";
+        params.event = "error";
+        params.event_details = "storage folder format(s) invalid";
         delete params.file_url;
 
         assert(spy.calledOnce);
@@ -330,6 +331,7 @@
         spy = sinon.spy(RiseVision.Common.Logger, "log");
         params.event = "done";
         params.file_url = null;
+        delete params.event_details;
 
         clock.tick(5000);
 

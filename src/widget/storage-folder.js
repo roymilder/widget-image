@@ -116,7 +116,10 @@ RiseVision.Image.StorageFolder = function (data) {
 
 
     storage.addEventListener("rise-storage-folder-invalid", function () {
-      var params = { "event": "storage folder format(s) invalid" };
+      var params = {
+        "event": "error",
+        "event_details": "storage folder format(s) invalid"
+      };
 
       RiseVision.Image.logEvent(params, true);
       RiseVision.Image.showError("The selected folder does not contain any supported image formats.");

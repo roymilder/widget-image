@@ -25,6 +25,7 @@
     "gulp": "~3.8.3",
     "gulp-bump": "~0.1.8",
     "gulp-html-replace": "^1.4.4",
+    "gulp-if": "^2.0.0",
     "gulp-jshint": "~1.5.5",
     "gulp-minify-css": "0.3.4",
     "gulp-rename": "~1.2.0",

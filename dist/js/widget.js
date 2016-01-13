@@ -1316,7 +1316,7 @@ RiseVision.Image.StorageFolder = function (data) {
       };
 
       RiseVision.Image.logEvent(params, true);
-      RiseVision.Image.showError("The selected folder does not exist.");
+      RiseVision.Image.showError("The selected folder does not exist or has been moved to Trash.");
     });
 
 

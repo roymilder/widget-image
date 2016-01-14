@@ -92,7 +92,15 @@ RiseVision.Image.StorageFile = function (params) {
         };
 
       RiseVision.Image.logEvent(params, true);
-      RiseVision.Image.showError("There was a problem retrieving the file from Rise Cache.");
+
+      // Show a different message if there is a 404 coming from rise cache
+      var statusCode = e.detail.error.currentTarget.status;
+
+      var errorMessage = "There was a problem retrieving the file from Rise Cache.";
+      if(statusCode === 404){
+        errorMessage = "The image does not exist or cannot be accessed.";
+      }
+      RiseVision.Image.showError(errorMessage);
     });
 
     storage.setAttribute("folder", params.storage.folder);

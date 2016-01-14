@@ -56,7 +56,7 @@
         "event_details": "storage folder empty",
         "company_id": '"companyId"',
         "display_id": '"displayId"'
-      }, paramsStub, configLogCall;
+      }, paramsStub;
 
     paramsStub = sinon.stub(RiseVision.Image, "setAdditionalParams", function (params, mode) {
       // spy on log call
@@ -65,8 +65,6 @@
       paramsStub.restore();
       // call it again with the params
       RiseVision.Image.setAdditionalParams(params, mode);
-      // capture the configuration log args
-      configLogCall = RiseVision.Common.Logger.log.getCall(0);
 
       storage.dispatchEvent(new CustomEvent("rise-storage-response", {
         "detail": {
@@ -127,13 +125,13 @@
       });
 
       test("should log the configuration event", function () {
-        assert.equal(configLogCall.args[0], table);
-        assert.deepEqual(configLogCall.args[1], {
+
+        assert(spy.calledWith(table, {
           "event": "configuration",
           "event_details": "storage folder",
           "company_id": params.company_id,
           "display_id": params.display_id
-        });
+        }));
 
       });
     });

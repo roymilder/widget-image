@@ -19,12 +19,13 @@ RiseVision.Image = (function (gadgets) {
   var _currentFiles = [];
 
   var _errorLog = null,
+    _configurationType = null,
     _errorTimer = null,
-    _errorFlag = false;
+    _errorFlag = false,
+    _storageErrorFlag = false,
+    _configurationLogged = false;
 
   var _viewerPaused = true;
-
-  var _storageErrorFlag = false;
 
   /*
    *  Private Methods
@@ -84,7 +85,6 @@ RiseVision.Image = (function (gadgets) {
     var container = document.getElementById("container"),
       fragment = document.createDocumentFragment(),
       el = document.createElement("div"),
-      details = null,
       isStorageFile;
 
     // create instance of message
@@ -111,12 +111,12 @@ RiseVision.Image = (function (gadgets) {
       isStorageFile = (Object.keys(_params.storage).length !== 0);
 
       if (!isStorageFile) {
-        details = "custom";
+        _configurationType = "custom";
 
         _nonStorage = new RiseVision.Image.NonStorage(_params);
         _nonStorage.init();
       } else {
-        details = "storage file";
+        _configurationType = "storage file";
 
         // create and initialize the Storage file instance
         _storage = new RiseVision.Image.StorageFile(_params);
@@ -130,14 +130,12 @@ RiseVision.Image = (function (gadgets) {
       fragment.appendChild(el);
       container.appendChild(fragment);
 
-      details = "storage folder";
+      _configurationType = "storage folder";
 
       // create and initialize the Storage folder instance
       _storage = new RiseVision.Image.StorageFolder(_params);
       _storage.init();
     }
-
-    RiseVision.Common.LoggerUtils.logEvent(getTableName(), { "event": "configuration", "event_details": details });
 
     _ready();
   }
@@ -238,6 +236,11 @@ RiseVision.Image = (function (gadgets) {
 
   function play() {
     _viewerPaused = false;
+
+    if (!_configurationLogged) {
+      logEvent({ "event": "configuration", "event_details": _configurationType }, false);
+      _configurationLogged = true;
+    }
 
     logEvent({ "event": "play", "file_url": _getCurrentFile() }, false);
 

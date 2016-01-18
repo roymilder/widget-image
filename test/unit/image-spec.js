@@ -23,8 +23,8 @@ describe("logEvent", function() {
       "event_details": "test details",
       "file_url": "http://www.test.com/file.jpg",
       "file_format": "jpg",
-      "company_id": '"companyId"',
-      "display_id":'"displayId"'
+      "company_id": "",
+      "display_id": ""
     };
 
     RiseVision.Image.logEvent({
@@ -39,8 +39,8 @@ describe("logEvent", function() {
   it("should call spy with correct parameters when only the event is set", function() {
     var params = {
       "event": "test",
-      "company_id": '"companyId"',
-      "display_id":'"displayId"'
+      "company_id": "",
+      "display_id": ""
     };
 
     RiseVision.Image.logEvent({ "event": "test" });

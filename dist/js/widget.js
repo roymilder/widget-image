@@ -11,49 +11,15 @@ var WIDGET_COMMON_CONFIG = {
 var RiseVision = RiseVision || {};
 RiseVision.Common = RiseVision.Common || {};
 
-RiseVision.Common.LoggerUtils = (function(gadgets) {
+RiseVision.Common.LoggerUtils = (function() {
   "use strict";
 
-   var id = new gadgets.Prefs().getString("id"),
-    displayId = "",
-    companyId = "",
-    callback = null;
-
-  var BASE_INSERT_SCHEMA =
-  {
-    "kind": "bigquery#tableDataInsertAllRequest",
-    "skipInvalidRows": false,
-    "ignoreUnknownValues": false,
-    "rows": [{
-      "insertId": ""
-    }]
-  };
+   var displayId = "",
+    companyId = "";
 
   /*
    *  Private Methods
    */
-
-  /* Set the Company and Display IDs. */
-  function setIds(names, values) {
-    if (Array.isArray(names) && names.length > 0) {
-      if (Array.isArray(values) && values.length > 0) {
-        if (names[0] === "companyId") {
-          companyId = values[0];
-        }
-
-        if (names[1] === "displayId") {
-          if (values[1]) {
-            displayId = values[1];
-          }
-          else {
-            displayId = "preview";
-          }
-        }
-
-        callback(companyId, displayId);
-      }
-    }
-  }
 
   /* Retrieve parameters to pass to the event logger. */
   function getEventParams(params, cb) {
@@ -67,40 +33,37 @@ RiseVision.Common.LoggerUtils = (function(gadgets) {
         json.file_format = getFileFormat(json.file_url);
       }
 
-      getIds(function(companyId, displayId) {
-        json.company_id = companyId;
-        json.display_id = displayId;
+      json.company_id = companyId;
+      json.display_id = displayId;
 
-        cb(json);
-      });
+      cb(json);
     }
     else {
       cb(json);
     }
   }
 
+  // Get suffix for BQ table name.
+  function getSuffix() {
+    var date = new Date(),
+      year = date.getUTCFullYear(),
+      month = date.getUTCMonth() + 1,
+      day = date.getUTCDate();
+
+    if (month < 10) {
+      month = "0" + month;
+    }
+
+    if (day < 10) {
+      day = "0" + day;
+    }
+
+    return year + month + day;
+  }
+
   /*
    *  Public Methods
    */
-  function getIds(cb) {
-    if (!cb || typeof cb !== "function") {
-      return;
-    }
-    else {
-      callback = cb;
-    }
-
-    if (companyId && displayId) {
-      callback(companyId, displayId);
-    }
-    else {
-      if (id && id !== "") {
-        gadgets.rpc.register("rsparam_set_" + id, setIds);
-        gadgets.rpc.call("", "rsparam_get", null, id, ["companyId", "displayId"]);
-      }
-    }
-  }
-
   function getFileFormat(url) {
     var hasParams = /[?#&]/,
       str;
@@ -124,30 +87,22 @@ RiseVision.Common.LoggerUtils = (function(gadgets) {
   }
 
   function getInsertData(params) {
-    var data = JSON.parse(JSON.stringify(BASE_INSERT_SCHEMA));
+    var BASE_INSERT_SCHEMA = {
+      "kind": "bigquery#tableDataInsertAllRequest",
+      "skipInvalidRows": false,
+      "ignoreUnknownValues": false,
+      "templateSuffix": getSuffix(),
+      "rows": [{
+        "insertId": ""
+      }]
+    },
+    data = JSON.parse(JSON.stringify(BASE_INSERT_SCHEMA));
 
     data.rows[0].insertId = Math.random().toString(36).substr(2).toUpperCase();
     data.rows[0].json = JSON.parse(JSON.stringify(params));
     data.rows[0].json.ts = new Date().toISOString();
 
     return data;
-  }
-
-  function getTable(name) {
-    var date = new Date(),
-      year = date.getUTCFullYear(),
-      month = date.getUTCMonth() + 1,
-      day = date.getUTCDate();
-
-    if (month < 10) {
-      month = "0" + month;
-    }
-
-    if (day < 10) {
-      day = "0" + day;
-    }
-
-    return name + year + month + day;
   }
 
   function logEvent(table, params) {
@@ -158,14 +113,19 @@ RiseVision.Common.LoggerUtils = (function(gadgets) {
     });
   }
 
+  /* Set the Company and Display IDs. */
+  function setIds(company, display) {
+    companyId = company;
+    displayId = display;
+  }
+
   return {
-    "getIds": getIds,
     "getInsertData": getInsertData,
     "getFileFormat": getFileFormat,
-    "getTable": getTable,
-    "logEvent": logEvent
+    "logEvent": logEvent,
+    "setIds": setIds
   };
-})(gadgets);
+})();
 
 RiseVision.Common.Logger = (function(utils) {
   "use strict";
@@ -226,7 +186,7 @@ RiseVision.Common.Logger = (function(utils) {
       var xhr = new XMLHttpRequest(),
         insertData, url;
 
-      url = serviceUrl.replace("TABLE_ID", utils.getTable(tableName));
+      url = serviceUrl.replace("TABLE_ID", tableName);
       refreshDate = refreshData.refreshedAt || refreshDate;
       token = refreshData.token || token;
       insertData = utils.getInsertData(params);
@@ -308,7 +268,7 @@ RiseVision.Common.RiseCache = (function () {
       if (isCacheRunning) {
         // configure url with cachebuster or not
         url = (nocachebuster) ? BASE_CACHE_URL + "?url=" + encodeURIComponent(fileUrl) :
-          BASE_CACHE_URL + "cb=" + new Date().getTime() + "?url=" + encodeURIComponent(fileUrl);
+        BASE_CACHE_URL + "cb=" + new Date().getTime() + "?url=" + encodeURIComponent(fileUrl);
       } else {
         if (nocachebuster) {
           url = fileUrl;
@@ -509,7 +469,6 @@ RiseVision.Common.Utilities = (function() {
   };
 })();
 
-/* global config: true */
 /* exported config */
 if (typeof angular !== "undefined") {
   angular.module("risevision.common.i18n.config", [])
@@ -517,11 +476,9 @@ if (typeof angular !== "undefined") {
     .constant("LOCALES_SUFIX", ".json");
 }
 
-if (typeof config === "undefined") {
-  var config = {
-    STORAGE_ENV: "prod"
-  };
-}
+var config = {
+  STORAGE_ENV: "prod"
+};
 
 /* global gadgets, _ */
 
@@ -1548,11 +1505,32 @@ RiseVision.Common.Message = function (mainContainer, messageContainer) {
   };
 
   function configure(names, values) {
-    var additionalParams, mode;
+    var additionalParams, mode,
+      companyId = "",
+      displayId = "";
 
-    if (Array.isArray(names) && names.length > 0 && names[0] === "additionalParams") {
-      if (Array.isArray(values) && values.length > 0) {
-        additionalParams = JSON.parse(values[0]);
+    if (Array.isArray(names) && names.length > 0 && Array.isArray(values) && values.length > 0) {
+      // company id
+      if (names[0] === "companyId") {
+        companyId = values[0];
+      }
+
+      // display id
+      if (names[1] === "displayId") {
+        if (values[1]) {
+          displayId = values[1];
+        }
+      else {
+          displayId = "preview";
+        }
+      }
+
+      // provide LoggerUtils the ids to use
+      RiseVision.Common.LoggerUtils.setIds(companyId, displayId);
+
+      // additional params
+      if (names[2] === "additionalParams") {
+        additionalParams = JSON.parse(values[2]);
 
         if (Object.keys(additionalParams.storage).length !== 0) {
           // storage file or folder selected
@@ -1593,7 +1571,7 @@ RiseVision.Common.Message = function (mainContainer, messageContainer) {
       gadgets.rpc.register("rscmd_pause_" + id, pause);
       gadgets.rpc.register("rscmd_stop_" + id, stop);
       gadgets.rpc.register("rsparam_set_" + id, configure);
-      gadgets.rpc.call("", "rsparam_get", null, id, ["additionalParams"]);
+      gadgets.rpc.call("", "rsparam_get", null, id, ["companyId", "displayId", "additionalParams"]);
     }
   }
 

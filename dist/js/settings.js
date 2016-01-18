@@ -8589,7 +8589,6 @@ module.run(["$templateCache", function($templateCache) {
 }]);
 })();
 
-/* global config: true */
 /* exported config */
 if (typeof angular !== "undefined") {
   angular.module("risevision.common.i18n.config", [])
@@ -8597,11 +8596,9 @@ if (typeof angular !== "undefined") {
     .constant("LOCALES_SUFIX", ".json");
 }
 
-if (typeof config === "undefined") {
-  var config = {
-    STORAGE_ENV: "prod"
-  };
-}
+var config = {
+  STORAGE_ENV: "prod"
+};
 
 angular.module("risevision.widget.image.settings", [
   "risevision.common.i18n",

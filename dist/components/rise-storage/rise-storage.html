@@ -22,7 +22,7 @@
     </iron-ajax>
 
     <iron-ajax id="ping"
-      url="http://localhost:9494/ping?callback=_handlePingResponse"
+      url="//localhost:9494/ping?callback=_handlePingResponse"
       handle-as="text"
       on-response="_handlePingResponse"
       on-error="_handlePingError"
@@ -191,9 +191,9 @@
      *
      * @property _baseCacheUrl
      * @type string
-     * @default "http://localhost:9494/"
+     * @default "//localhost:9494/"
      */
-    _baseCacheUrl: "http://localhost:9494/",
+    _baseCacheUrl: "//localhost:9494/",
 
     /**
      * Whether or not Rise Cache is running.

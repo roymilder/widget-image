@@ -69,6 +69,16 @@ RiseVision.Image.StorageFile = function (params) {
       RiseVision.Image.showError("The selected image is temporarily unavailable.");
     });
 
+    storage.addEventListener("rise-storage-subscription-expired", function() {
+      var params = {
+        "event": "error",
+        "event_details": "storage subscription expired"
+      };
+
+      RiseVision.Image.logEvent(params, true);
+      RiseVision.Image.showError("Rise Storage subscription is not active.");
+    });
+
     storage.addEventListener("rise-storage-error", function(e) {
       var fileUrl = (e.detail && e.detail.request && e.detail.request.url) ? e.detail.request.url : null,
         params = {

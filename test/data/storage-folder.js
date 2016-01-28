@@ -9,10 +9,10 @@
       "selector": {
         "selection": "single-folder",
         "storageName": "images/",
-        "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-abc123/o?prefix=images%2F"
+        "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o?prefix=images%2F"
       },
       "storage": {
-        "companyId": "abc123",
+        "companyId": "b428b4e8-c8b9-41d5-8a10-b4193c789443",
         "folder": "images/",
         "fileName": ""
       },

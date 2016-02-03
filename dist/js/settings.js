@@ -8269,12 +8269,6 @@ module.run(["$templateCache", function($templateCache) {
             scope.selector.selection = type;
             scope.selector.storageName = getStorageName(data[0], scope.selector.selection);
             scope.selector.url = data[0];
-
-            if (!scope.isSubscribed) {
-              // ensure subscription-status component does a refresh in case user subscribed from in-app storage
-              $rootScope.$broadcast("refreshSubscriptionStatus", null);
-            }
-
           });
 
           scope.$watch("selectorValid", function (valid) {
@@ -8301,6 +8295,12 @@ module.run(["$templateCache", function($templateCache) {
                 scope.customInit = true;
                 // set selector validity to false to account for allowing an initial empty value for url-field
                 scope.selectorValid = false;
+              }
+
+              if (!scope.subscriptionOff && !scope.hideSubscription) {
+                // ensure subscription-status component does a refresh in case user subscribed from in-app storage
+                scope.isSubscribed = false;
+                $rootScope.$broadcast("refreshSubscriptionStatus", null);
               }
 
               $rootScope.$broadcast("fileSelectorClick", selection);
@@ -8390,9 +8390,9 @@ module.run(["$templateCache", function($templateCache) {
     "  </div>\n" +
     "\n" +
     "  <!-- Storage Subscription Status -->\n" +
-    "  <div ng-show=\"!isSubscribed && !hideSubscription && !subscriptionOff\" subscription-status expanded-format=\"true\"\n" +
+    "  <div ng-if=\"!isSubscribed && !hideSubscription && !subscriptionOff\" subscription-status expanded-format=\"true\"\n" +
     "       product-id=\"24\" product-code=\"b0cba08a4baa0c62b8cdc621b6f6a124f89a03db\" company-id=\"{{companyId}}\"\n" +
-    "       ng-model=\"subscribed\">\n" +
+    "       ng-model=\"$parent.subscribed\">\n" +
     "  </div>\n" +
     "\n" +
     "</div>\n" +

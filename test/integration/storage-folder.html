@@ -36,7 +36,7 @@
 <script src="../../src/components/widget-common/dist/config.js"></script>
 <script src="../../src/components/widget-common/dist/rise-cache.js"></script>
 <script src="../../src/components/widget-common/dist/common.js"></script>
-<script src="../../src/config/test.js"></script>
+<script src="../../src/config/config.js"></script>
 <script src="../../src/widget/image.js"></script>
 <script src="../../src/widget/slider.js"></script>
 <script src="../../src/widget/storage-folder.js"></script>
@@ -44,7 +44,6 @@
 <script src="../../src/widget/main.js"></script>
 
 <script>
-
   suite("storage - folder", function() {
     var storage = document.querySelector("rise-storage"),
       spy = sinon.spy(RiseVision.Image, "setAdditionalParams");
@@ -53,14 +52,18 @@
       storage._handlePingError();
     });
 
+    // No need to make requests to Storage via the component since events are triggered manually
+    // for these test cases.
+    sinon.stub(storage, "_getStorageSubscription", function () {});
+
     suite("initialize", function () {
       var check = function(done) {
         if (spy && spy.calledOnce) {
           storage.dispatchEvent(new CustomEvent("rise-storage-response", {
             "detail": {
               "added": true,
-              "name": "images/Gone_Girl_Book_Cover.jpg",
-              "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGone_Girl_Book_Cover.jpg?alt=media"
+              "name": "widget-testing/image-widget/Gone_Girl_Book_Cover.jpg",
+              "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media"
             },
             "bubbles": true
           }));
@@ -68,8 +71,8 @@
           storage.dispatchEvent(new CustomEvent("rise-storage-response", {
             "detail": {
               "added": true,
-              "name": "images/Gated_Book_Cover.jpg",
-              "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGated_Book_Cover.jpg?alt=media"
+              "name": "widget-testing/image-widget/Gated_Book_Cover.jpg",
+              "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGated_Book_Cover.jpg?alt=media"
             },
             "bubbles": true
           }));
@@ -96,11 +99,11 @@
       });
 
       test("should set folder attribute of storage component", function() {
-        assert.equal(storage.folder, "images/");
+        assert.equal(storage.folder, "widget-testing/image-widget/");
       });
 
       test("should set companyid attribute of storage component", function() {
-        assert.equal(storage.companyid, "b428b4e8-c8b9-41d5-8a10-b4193c789443");
+        assert.equal(storage.companyid, "30007b45-3df0-4c7b-9f7f-7d8ce6443013");
       });
 
       test("should set env attribute of storage component", function() {
@@ -128,9 +131,9 @@
       });
 
       test("should add images in alphabetical order", function() {
-        assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(1) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGated_Book_Cover.jpg?alt=media", "first slide");
+        assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(1) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGated_Book_Cover.jpg?alt=media", "first slide");
 
-        assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(2) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGone_Girl_Book_Cover.jpg?alt=media", "second slide");
+        assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(2) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media", "second slide");
       });
 
     });
@@ -140,7 +143,7 @@
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "added": true,
-            "name": "images/The_Girl_On_The_Train_Cover.jpg",
+            "name": "widget-testing/image-widget/The_Girl_On_The_Train_Cover.jpg",
             "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FThe_Girl_On_The_Train_Cover.jpg?alt=media"
           },
           "bubbles": true
@@ -161,8 +164,8 @@
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": true,
-            "name": "images/Gated_Book_Cover.jpg",
-            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGated_Book_Cover.jpg?alt=media&cb=0"
+            "name": "widget-testing/image-widget/Gated_Book_Cover.jpg",
+            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGated_Book_Cover.jpg?alt=media&cb=0"
           },
           "bubbles": true
         }));
@@ -171,7 +174,7 @@
       test("should update image", function(done) {
         setTimeout(function() {
           assert.equal(document.querySelectorAll(".tp-revslider-mainul .tp-revslider-slidesli").length, 3, "num of slides");
-          assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(1) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGated_Book_Cover.jpg?alt=media&cb=0");
+          assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(1) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGated_Book_Cover.jpg?alt=media&cb=0");
           done();
         }, 8000);
       });
@@ -186,8 +189,8 @@
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": false,
-            "name": "images/Gated_Book_Cover.jpg",
-            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGated_Book_Cover.jpg?alt=media&cb=0"
+            "name": "widget-testing/image-widget/Gated_Book_Cover.jpg",
+            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGated_Book_Cover.jpg?alt=media&cb=0"
           },
           "bubbles": true
         }));
@@ -208,8 +211,8 @@
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "deleted": true,
-            "name": "images/Gated_Book_Cover.jpg",
-            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGated_Book_Cover.jpg?alt=media&cb=0"
+            "name": "widget-testing/image-widget/Gated_Book_Cover.jpg",
+            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGated_Book_Cover.jpg?alt=media&cb=0"
           },
           "bubbles": true
         }));
@@ -218,14 +221,13 @@
       test("should delete image", function(done) {
         setTimeout(function() {
           assert.equal(document.querySelectorAll(".tp-revslider-mainul .tp-revslider-slidesli").length, 2, "number of slides");
-          assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(1) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGone_Girl_Book_Cover.jpg?alt=media", "slide");
+          assert.equal(document.querySelector(".tp-revslider-mainul .tp-revslider-slidesli:nth-child(1) .tp-bgimg").getAttribute("src"), "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media", "slide");
           done();
         }, 5000);
       });
     });
 
     suite("network recovery", function () {
-
       test("should call onFileRefresh() if in state of storage error and network recovered", function() {
         var onRefreshStub = sinon.stub(RiseVision.Image, "onFileRefresh", function(){});
 
@@ -244,8 +246,8 @@
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": false,
-            "name": "images/Gated_Book_Cover.jpg",
-            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/images%2FGated_Book_Cover.jpg?alt=media&cb=0"
+            "name": "widget-testing/image-widget/Gated_Book_Cover.jpg",
+            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGated_Book_Cover.jpg?alt=media&cb=0"
           },
           "bubbles": true
         }));
@@ -257,7 +259,6 @@
     });
 
   });
-
 </script>
 </body>
 </html>

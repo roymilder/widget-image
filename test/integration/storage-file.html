@@ -28,7 +28,7 @@
 
 <script src="../../src/components/widget-common/dist/config.js"></script>
 <script src="../../src/components/widget-common/dist/rise-cache.js"></script>
-<script src="../../src/config/test.js"></script>
+<script src="../../src/config/config.js"></script>
 <script src="../../src/widget/image.js"></script>
 <script src="../../src/widget/storage-file.js"></script>
 <script src="../../src/components/widget-common/dist/message.js"></script>
@@ -38,55 +38,58 @@
   suite("storage - file", function() {
 
     var storage = document.querySelector("rise-storage"),
+      spy = sinon.spy(RiseVision.Image, "setAdditionalParams"),
       responded = false,
+      refreshSpy = null,
       listener;
 
     sinon.stub(storage.$.ping, "generateRequest", function () {
       storage._handlePingError();
     });
 
-    sinon.stub(storage, "_getStorageSubscription", function () {
-      storage._computeStorageUrl();
-      storage._loadStorage();
-    });
+    // No need to make requests to Storage via the component since events are triggered manually
+    // for these test cases.
+    sinon.stub(storage, "_getStorageSubscription", function () {});
 
     suite("file added", function () {
       var check = function(done) {
-          if (responded) {
-            done();
-          }
-          else {
-            setTimeout(function() {
-              check(done)
-            }, 1000);
-          }
-        };
+        if (spy && spy.calledOnce) {
+          storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+            "detail": {
+              "added": true,
+              "name": "widget-testing/image-widget/Gone_Girl_Book_Cover.jpg",
+              "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media"
+            },
+            "bubbles": true
+          }));
 
-      suiteSetup(function() {
-        listener = function(response) {
-          responded = true;
-          storage.removeEventListener("rise-storage-response", listener);
-        };
+          done();
+        }
+        else {
+          setTimeout(function() {
+            check(done)
+          }, 1000);
+        }
+      };
 
-        storage.addEventListener("rise-storage-response", listener);
-
-      });
-
-      // Don't run the tests until rise-storage-response has fired.
-      setup(function (done) {
+      suiteSetup(function(done) {
         check(done);
       });
 
+      suiteTeardown(function() {
+        RiseVision.Image.setAdditionalParams.restore();
+      });
+
       test("should set folder attribute of storage component", function() {
-        assert.equal(storage.folder, "Widgets");
+        assert.equal(storage.folder, "widget-testing/image-widget/");
       });
 
       test("should set filename attribute of storage component", function() {
-        assert.equal(storage.filename, "simpson's.jpg");
+        assert.equal(storage.filename, "Gone_Girl_Book_Cover.jpg");
       });
 
       test("should set companyid attribute of storage component", function() {
-        assert.equal(storage.companyid, "b428b4e8-c8b9-41d5-8a10-b4193c789443");
+        assert.equal(storage.companyid, "30007b45-3df0-4c7b-9f7f-7d8ce6443013");
       });
 
       test("should set env attribute of storage component", function() {
@@ -103,39 +106,45 @@
 
       test("should set background image", function() {
         assert.equal(document.getElementById("image").style.backgroundImage,
-          'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o/Widgets%2Fsimpson\'s.jpg?alt=media\")');
+          'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media\")');
       });
     });
 
     suite("file changed", function() {
+      setup(function() {
+        refreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+      })
+
+      teardown(function() {
+        RiseVision.Image.onFileRefresh.restore();
+      });
 
       test("should call onFileRefresh() and set background image", function() {
-        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
-
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": true,
-            "name": "Widgets/simpson's.jpg",
-            "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson's.jpg"
+            "name": "widget-testing/image-widget/Gone_Girl_Book_Cover.jpg",
+            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media&cb=0"
           },
           "bubbles": true
         }));
 
-        assert(onRefreshSpy.calledOnce);
-
+        assert(refreshSpy.calledOnce);
         assert.equal(document.getElementById("image").style.backgroundImage,
-          'url(\"https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson\'s.jpg\")');
+          'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media&cb=0\")');
+      });
+    });
 
+    suite("file name/url changed (quotes)", function() {
+      setup(function() {
+        refreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+      })
+
+      teardown(function() {
         RiseVision.Image.onFileRefresh.restore();
       });
 
-    });
-
-    suite("file name/url changed (no quotes)", function() {
-
       test("should call onFileRefresh() and set background image", function() {
-        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
-
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": true,
@@ -145,20 +154,22 @@
           "bubbles": true
         }));
 
-        assert(onRefreshSpy.calledOnce);
-
+        assert(refreshSpy.calledOnce);
         assert.equal(document.getElementById("image").style.backgroundImage,
           'url("https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg")');
-
-        RiseVision.Image.onFileRefresh.restore();
       });
     });
 
     suite("file unchanged", function() {
+      setup(function() {
+        refreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+      })
+
+      teardown(function() {
+        RiseVision.Image.onFileRefresh.restore();
+      });
 
       test("should not call onFileRefresh() when file has not changed", function() {
-        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
-
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": false,
@@ -168,9 +179,7 @@
           "bubbles": true
         }));
 
-        assert(onRefreshSpy.notCalled);
-
-        RiseVision.Image.onFileRefresh.restore();
+        assert(refreshSpy.notCalled);
       });
 
     });
@@ -276,10 +285,15 @@
     });
 
     suite("Network Recovery", function () {
+      setup(function() {
+        refreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
+      })
+
+      teardown(function() {
+        RiseVision.Image.onFileRefresh.restore();
+      });
 
       test("should call onFileRefresh() if in state of storage error and network recovered", function() {
-        var onRefreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
-
         // force a storage error in the scenario of a network failure
         storage.dispatchEvent(new CustomEvent("rise-storage-error", {
           "detail": {
@@ -301,9 +315,7 @@
           "bubbles": true
         }));
 
-        assert(onRefreshSpy.calledOnce);
-
-        RiseVision.Image.onFileRefresh.restore();
+        assert(refreshSpy.calledOnce);
       });
     });
 

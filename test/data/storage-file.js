@@ -8,13 +8,13 @@
       "url": "",
       "selector": {
         "selection": "single-file",
-        "storageName": "Widgets/simpson's.jpg",
-        "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpson's.jpg"
+        "storageName": "widget-testing/image-widget/Gone_Girl_Book_Cover.jpg",
+        "url": "https://storage.googleapis.com/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg"
       },
       "storage": {
-        "folder": "Widgets",
-        "fileName": "simpson's.jpg",
-        "companyId": "b428b4e8-c8b9-41d5-8a10-b4193c789443"
+        "folder": "widget-testing/image-widget/",
+        "fileName": "Gone_Girl_Book_Cover.jpg",
+        "companyId": "30007b45-3df0-4c7b-9f7f-7d8ce6443013"
       },
       "resume": true,
       "scaleToFit": true,

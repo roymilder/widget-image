@@ -27,6 +27,7 @@
   <script src="../../node_modules/widget-tester/mocks/logger-mock.js"></script>
 
   <script src="../../src/components/widget-common/dist/config.js"></script>
+  <script src="../../src/components/widget-common/dist/common.js"></script>
   <script src="../../src/components/widget-common/dist/rise-cache.js"></script>
   <script src="../../src/config/test.js"></script>
   <script src="../../src/widget/image.js"></script>
@@ -184,9 +185,7 @@
                 "url": "http://localhost:9494/?url=https%3A%2F%2Fstorage.googleapis.com%2Frisemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443%2FWidgets%2Fsimpson's.jpg"
               },
               "error": {
-                "currentTarget": {
-                  "status": 404
-                }
+                "message": "The request failed with status code: 404"
               }
             },
             "bubbles": true

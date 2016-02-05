@@ -8,12 +8,12 @@
       "url": "",
       "selector": {
         "selection": "single-folder",
-        "storageName": "images/",
-        "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/o?prefix=images%2F"
+        "storageName": "widget-testing/image-widget/",
+        "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o?prefix=widget-testing%2Fimage-widget%2F"
       },
       "storage": {
-        "companyId": "b428b4e8-c8b9-41d5-8a10-b4193c789443",
-        "folder": "images/",
+        "companyId": "30007b45-3df0-4c7b-9f7f-7d8ce6443013",
+        "folder": "widget-testing/image-widget/",
         "fileName": ""
       },
       "resume": true,

@@ -97,19 +97,19 @@ RiseVision.Image.StorageFile = function (params) {
         params = {
           "event": "error",
           "event_details": "rise cache error",
-          "error_details": "The request failed with status code: " + e.detail.error.currentTarget.status,
+          "error_details": e.detail.error.message,
           "file_url": fileUrl
         };
 
       RiseVision.Image.logEvent(params, true);
 
+      var statusCode = 0;
       // Show a different message if there is a 404 coming from rise cache
-      var statusCode = e.detail.error.currentTarget.status;
-
-      var errorMessage = "There was a problem retrieving the file from Rise Cache.";
-      if(statusCode === 404){
-        errorMessage = "The image does not exist or cannot be accessed.";
+      if(e.detail.error.message){
+        statusCode = +e.detail.error.message.substring(e.detail.error.message.indexOf(":")+2);
       }
+
+      var errorMessage = RiseVision.Common.Utilities.getRiseCacheErrorMessage(statusCode);
       RiseVision.Image.showError(errorMessage);
     });
 

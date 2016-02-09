@@ -202,11 +202,34 @@
         RiseVision.Image.logEvent.restore();
       });
 
+      test("should handle when 'storage api' error occurs", function() {
+        params.event = "error";
+        params.event_details = "storage api error";
+        params.error_details = "Response code: 500, message: Could not retrieve Bucket Items";
+
+        storage.dispatchEvent(new CustomEvent("rise-storage-api-error", {
+          "detail": {
+            "result": false,
+            "code": 500,
+            "message": "Could not retrieve Bucket Items"
+          },
+          "bubbles": true
+        }));
+
+        assert(onLogEventStub.calledOnce, "logEvent() called once");
+        assert(onLogEventStub.calledWith(params, true), "logEvent() called with correct params");
+        assert(onShowErrorStub.calledOnce, "showError() called once");
+        assert(onShowErrorStub.calledWith("Sorry, there was a problem communicating with Rise Storage."),
+          "showError() called with correct message");
+      });
+
       test("should handle when 'no file' error occurs", function() {
         var filePath = window.gadget.settings.additionalParams.storage.folder + "/" + window.gadget.settings.additionalParams.storage.fileName;
         params.event = "error";
         params.event_details = "storage file not found";
         params.file_url = filePath;
+
+        delete params.error_details;
 
         storage.dispatchEvent(new CustomEvent("rise-storage-no-file", {
           "detail": filePath,

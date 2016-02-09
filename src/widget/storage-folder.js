@@ -93,6 +93,17 @@ RiseVision.Image.StorageFolder = function (data) {
 
     storage.addEventListener("rise-storage-response", handleResponse);
 
+    storage.addEventListener("rise-storage-api-error", function(e) {
+      var params = {
+        "event": "error",
+        "event_details": "storage api error",
+        "error_details": "Response code: " + e.detail.code + ", message: " + e.detail.message
+      };
+
+      RiseVision.Image.logEvent(params, true);
+      RiseVision.Image.showError("Sorry, there was a problem communicating with Rise Storage.");
+    });
+
     storage.addEventListener("rise-storage-empty-folder", function () {
       var params = {
         "event": "error",

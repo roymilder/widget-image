@@ -106,8 +106,10 @@
       });
 
       test("should set background image", function() {
-        assert.equal(document.getElementById("image").style.backgroundImage,
-          'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media\")');
+        setTimeout(function() {
+          assert.equal(document.getElementById("image").style.backgroundImage,
+            'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media\")');
+        }, 3000);
       });
     });
 
@@ -131,8 +133,10 @@
         }));
 
         assert(refreshSpy.calledOnce);
-        assert.equal(document.getElementById("image").style.backgroundImage,
-          'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media&cb=0\")');
+        setTimeout(function() {
+          assert.equal(document.getElementById("image").style.backgroundImage,
+            'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media&cb=0\")');
+        }, 3000);
       });
     });
 
@@ -156,8 +160,10 @@
         }));
 
         assert(refreshSpy.calledOnce);
-        assert.equal(document.getElementById("image").style.backgroundImage,
-          'url("https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg")');
+        setTimeout(function() {
+          assert.equal(document.getElementById("image").style.backgroundImage,
+            'url("https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg")');
+        }, 3000);
       });
     });
 

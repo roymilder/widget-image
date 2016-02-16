@@ -101,10 +101,7 @@ RiseVision.Image = (function (gadgets) {
 
     if (_mode === "file") {
       // create the image <div> within the container <div>
-      el.setAttribute("id", "image");
-      el.className = _params.position;
-      el.className = _params.scaleToFit ? el.className + " scale-to-fit" : el.className;
-
+      el = _getImageElement();
       fragment.appendChild(el);
       container.appendChild(fragment);
 
@@ -140,9 +137,32 @@ RiseVision.Image = (function (gadgets) {
     _ready();
   }
 
+  function _getImageElement() {
+    var el = document.createElement("div");
+
+    el.setAttribute("id", "image");
+    el.className = _params.position;
+    el.className = _params.scaleToFit ? el.className + " scale-to-fit" : el.className;
+
+    return el;
+  }
+
   function setSingleImage(url) {
-    var image = document.querySelector("#container #image");
-    image.style.backgroundImage = "url(" + url + ")";
+      var container = document.getElementById("container"),
+      image = document.querySelector("#container #image"),
+      fragment = document.createDocumentFragment(),
+      el = _getImageElement();
+
+      el.style.backgroundImage = "url(" + url + ")";
+      el.style.opacity = "0";
+
+      fragment.appendChild(el);
+      container.appendChild(fragment);
+      el.style.opacity = "1";
+
+      setTimeout(function () {
+        container.removeChild(image);
+      }, 3000);
   }
 
   /*

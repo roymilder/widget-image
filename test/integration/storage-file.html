@@ -105,10 +105,11 @@
         assert.isNotNull(document.querySelector(".scale-to-fit"));
       });
 
-      test("should set background image", function() {
+      test("should set background image", function(done) {
         setTimeout(function() {
           assert.equal(document.getElementById("image").style.backgroundImage,
             'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media\")');
+          done();
         }, 3000);
       });
     });
@@ -122,7 +123,7 @@
         RiseVision.Image.onFileRefresh.restore();
       });
 
-      test("should call onFileRefresh() and set background image", function() {
+      test("should call onFileRefresh() and set background image", function(done) {
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": true,
@@ -136,11 +137,12 @@
         setTimeout(function() {
           assert.equal(document.getElementById("image").style.backgroundImage,
             'url(\"https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2FGone_Girl_Book_Cover.jpg?alt=media&cb=0\")');
+          done();
         }, 3000);
       });
     });
 
-    suite("file name/url changed (quotes)", function() {
+    suite("special characters in file name", function() {
       setup(function() {
         refreshSpy = sinon.spy(RiseVision.Image, "onFileRefresh");
       })
@@ -149,12 +151,12 @@
         RiseVision.Image.onFileRefresh.restore();
       });
 
-      test("should call onFileRefresh() and set background image", function() {
+      test("should show image with single quote in file name", function(done) {
         storage.dispatchEvent(new CustomEvent("rise-storage-response", {
           "detail": {
             "changed": true,
-            "name": "Widgets/simpsons.jpg",
-            "url": "https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg"
+            "name": "widget-testing/image-widget/special-characters/Simpson's.png",
+            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2Fspecial-characters%2FSimpson's.png?alt=media"
           },
           "bubbles": true
         }));
@@ -162,7 +164,26 @@
         assert(refreshSpy.calledOnce);
         setTimeout(function() {
           assert.equal(document.getElementById("image").style.backgroundImage,
-            'url("https://storage.googleapis.com/risemedialibrary-b428b4e8-c8b9-41d5-8a10-b4193c789443/Widgets%2Fsimpsons.jpg")');
+            'url("https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2Fspecial-characters%2FSimpson\'s.png?alt=media")');
+          done();
+        }, 3000);
+      });
+
+      test("should show image with parentheses in file name", function(done) {
+        storage.dispatchEvent(new CustomEvent("rise-storage-response", {
+          "detail": {
+            "changed": true,
+            "name": "widget-testing/image-widget/special-characters/weather-background (1).png",
+            "url": "https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2Fspecial-characters%2Fweather-background%20(1).png?alt=media"
+          },
+          "bubbles": true
+        }));
+
+        assert(refreshSpy.calledOnce);
+        setTimeout(function() {
+          assert.equal(document.getElementById("image").style.backgroundImage,
+            'url("https://www.googleapis.com/storage/v1/b/risemedialibrary-30007b45-3df0-4c7b-9f7f-7d8ce6443013/o/widget-testing%2Fimage-widget%2Fspecial-characters%2Fweather-background%20(1).png?alt=media")');
+          done();
         }, 3000);
       });
     });

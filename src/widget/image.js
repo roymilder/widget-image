@@ -153,7 +153,7 @@ RiseVision.Image = (function (gadgets) {
       fragment = document.createDocumentFragment(),
       el = _getImageElement();
 
-      el.style.backgroundImage = "url(" + url + ")";
+      el.style.backgroundImage = "url('" + url + "')";
       el.style.opacity = "0";
 
       fragment.appendChild(el);

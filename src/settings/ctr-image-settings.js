@@ -61,6 +61,7 @@ angular.module("risevision.widget.image.settings")
       "pause": 10,        // folder
       "autoHide": false,  // folder
       "url": "",          // legacy
-      "background": {}    // legacy
+      "background": {},   // legacy
+      "transition": 5
     }
   });

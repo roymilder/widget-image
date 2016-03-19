@@ -25,7 +25,7 @@
       g.identify=function(i,v){g(l,{uid:i});if(v)g(l,v)};g.setUserVars=function(v){FS(l,v)};
       g.identifyAccount=function(i,v){o='account';v=v||{};v.acctId=i;FS(o,v)};
       g.clearUserCookie=function(d,i){d=n.domain;while(1){n.cookie='fs_uid=;domain='+d+
-      ';path=/;expires='+new Date(0);i=d.indexOf('.');if(i<0)break;d=d.slice(i+1)}}
+        ';path=/;expires='+new Date(0);i=d.indexOf('.');if(i<0)break;d=d.slice(i+1)}}
     })(window,document,'FS','script','user');
   </script>
 
@@ -35,127 +35,117 @@
   </script>
 </head>
 <body ng-app="risevision.widget.image.settings" ng-controller="settingsController">
-  <div class="container-fluid image-settings-fs">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content scrollable-list" ng-controller="imageSettingsController" ng-cloak>
+<div class="container-fluid image-settings-fs">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content scrollable-list" ng-controller="imageSettingsController" ng-cloak>
 
-        <!-- Modal Header-->
-        <div class="modal-header">
-          <button type="button" class="close" ng-click="closeSettings()">
-            <i class="fa fa-times half-top"></i>
-          </button>
-          <h2 class="modal-title">
-            {{"image.settings" | translate }}
-            <a class="btn btn-link" href="https://github.com/Rise-Vision/widget-image" target="_blank">
-              <i class="fa fa-github fa-2x icon-gray"></i>
-            </a>
-          </h2>
-        </div>
+      <!-- Modal Header-->
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="closeSettings()">
+          <i class="fa fa-times half-top"></i>
+        </button>
+        <h2 class="modal-title">
+          {{"image.settings" | translate }}
+          <a class="btn btn-link" href="https://github.com/Rise-Vision/widget-image" target="_blank">
+            <i class="fa fa-github fa-2x icon-gray"></i>
+          </a>
+        </h2>
+      </div>
 
-        <!-- Modal Body-->
-        <form role="form" name="settingsForm">
-          <div class="modal-body">
+      <!-- Modal Body-->
+      <form role="form" name="settingsForm">
+        <div class="modal-body">
 
-            <!-- File Selector -->
-            <file-selector id="file-selector" name="fileSelector"
-                           company-id="{{settings.params.companyId}}"
-                           title="{{'image.url.label' | translate}}"
-                           file-label="{{'image.url.file' | translate}}"
-                           folder-label="{{'image.url.folder' | translate}}"
-                           file-type="image"
-                           selector="settings.additionalParams.selector"
-                           ng-model="fileselector" selector-valid valid></file-selector>
+          <!-- File Selector -->
+          <file-selector id="file-selector" name="fileSelector"
+                         company-id="{{settings.params.companyId}}"
+                         title="{{'image.url.label' | translate}}"
+                         file-label="{{'image.url.file' | translate}}"
+                         folder-label="{{'image.url.folder' | translate}}"
+                         file-type="image"
+                         selector="settings.additionalParams.selector"
+                         ng-model="fileselector" selector-valid valid></file-selector>
 
-            <!-- Resume Playback -->
-            <div class="form-group" ng-show="isFolder">
-              <div class="checkbox">
-                <label for="resume">
-                  <input id="resume" type="checkbox" ng-model="settings.additionalParams.resume">
-                  {{"widgets.resume" | translate}}
-                </label>
-              </div>
+          <!-- Resume Playback -->
+          <div class="form-group" ng-show="isFolder">
+            <div class="checkbox">
+              <label for="resume">
+                <input id="resume" type="checkbox" ng-model="settings.additionalParams.resume">
+                {{"widgets.resume" | translate}}
+              </label>
             </div>
-
-            <!-- Scale to Fit -->
-            <div class="form-group">
-              <div class="checkbox">
-                <label for="scale-to-fit">
-                  <input id="scale-to-fit" type="checkbox" ng-model="settings.additionalParams.scaleToFit">
-                  {{"widgets.scale-to-fit" | translate}}
-                </label>
-              </div>
-            </div>
-
-            <!-- Alignment -->
-            <div class="form-group">
-              <position-setting position="settings.additionalParams.position"></position-setting>
-            </div>
-
-            <!-- Duration -->
-            <div class="form-group" ng-show="isFolder">
-              <label>{{"image.duration.label" | translate}}:</label>
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="input-group">
-                    <input type="text" class="form-control" value="10" ng-model="settings.additionalParams.duration">
-                    <span class="input-group-addon">sec</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Resume Playing After -->
-            <div class="form-group" ng-show="isFolder">
-              <label>{{"image.pause.label" | translate}}:</label>
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="input-group">
-                    <input type="text" class="form-control" value="10" ng-model="settings.additionalParams.pause">
-                    <span class="input-group-addon">sec</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Auto Hide Navigation -->
-            <div class="form-group" ng-show="isFolder">
-              <div class="checkbox">
-                <label for="auto-hide">
-                  <input type="checkbox" ng-model="settings.additionalParams.autoHide">
-                  {{"image.auto-hide" | translate}}
-                </label>
-              </div>
-            </div>
-
-            <hr>
-          </div><!-- .modal-body -->
-
-          <!-- Modal Footer-->
-          <div class="modal-footer">
-            <!-- Button Toolbar -->
-            <widget-button-toolbar save="saveSettings()" cancel="closeSettings()" disable-save="settingsForm.$invalid">
-            </widget-button-toolbar>
           </div>
 
-        </form>
-      </div><!-- .modal-content -->
-    </div><!-- .modal-dialog -->
-  </div><!-- .container-fluid -->
+          <!-- Scale to Fit -->
+          <div class="form-group">
+            <div class="checkbox">
+              <label for="scale-to-fit">
+                <input id="scale-to-fit" type="checkbox" ng-model="settings.additionalParams.scaleToFit">
+                {{"widgets.scale-to-fit" | translate}}
+              </label>
+            </div>
+          </div>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script>
-    if (typeof jQuery == "undefined") {
-      document.write(unescape("%3Cscript src='components/jquery/dist/jquery.min.js' type='text/javascript'%3E%3C/script%3E"));
-    }
-  </script>
+          <!-- Alignment -->
+          <div class="form-group">
+            <position-setting position="settings.additionalParams.position"></position-setting>
+          </div>
 
-  <script src="js/settings.min.js"></script>
+          <!-- Duration -->
+          <div class="form-group" ng-show="isFolder">
+            <label>{{"image.duration.label" | translate}}:</label>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="input-group">
+                  <input type="text" class="form-control" value="10" ng-model="settings.additionalParams.duration">
+                  <span class="input-group-addon">sec</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <!-- build:e2egadgets -->
-  <script src="//rvashow2.appspot.com/gadgets/gadgets.min.js"></script>
-  
+          <!-- Transition -->
+          <div class="form-group">
+            <label>Transition:</label>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="input-group">
+                  <input type="text" class="form-control" value="5" ng-model="settings.additionalParams.transition">
+                  <span class="input-group-addon">sec</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <!-- Get from Bower if needed. -->
-  <script src="//s3.amazonaws.com/rise-common/scripts/i18next/i18next.min.js"></script>
+          <hr>
+        </div><!-- .modal-body -->
+
+        <!-- Modal Footer-->
+        <div class="modal-footer">
+          <!-- Button Toolbar -->
+          <widget-button-toolbar save="saveSettings()" cancel="closeSettings()" disable-save="settingsForm.$invalid">
+          </widget-button-toolbar>
+        </div>
+
+      </form>
+    </div><!-- .modal-content -->
+  </div><!-- .modal-dialog -->
+</div><!-- .container-fluid -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+  if (typeof jQuery == "undefined") {
+    document.write(unescape("%3Cscript src='components/jquery/dist/jquery.min.js' type='text/javascript'%3E%3C/script%3E"));
+  }
+</script>
+
+<script src="js/settings.min.js"></script>
+
+<!-- build:e2egadgets -->
+<script src="//rvashow2.appspot.com/gadgets/gadgets.min.js"></script>
+
+
+<!-- Get from Bower if needed. -->
+<script src="//s3.amazonaws.com/rise-common/scripts/i18next/i18next.min.js"></script>
 </body>
 </html>

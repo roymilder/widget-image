@@ -37,7 +37,7 @@ RiseVision.Image.Slider = function (params) {
 
       // Transition
       slide.setAttribute("data-transition", "fade");
-      slide.setAttribute("data-masterspeed", 500);
+      slide.setAttribute("data-masterspeed", params.transition * 1000); // Set the time of the transition
       slide.setAttribute("data-delay", params.duration * 1000);
 
       image.src = file.url;
@@ -204,6 +204,7 @@ RiseVision.Image.Slider = function (params) {
       "hideTimerBar": "on",
       "navigationType": "none",
       "onHoverStop": "off",
+      "touchenabled": "off",
       "startwidth": params.width,
       "startheight": params.height
     });
